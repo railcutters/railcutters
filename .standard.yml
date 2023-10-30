@@ -1,1 +1,9 @@
 ---
+# This file exists so that we can also use `standardrb` as the interface to run the linter if we
+# want.
+#
+# By default we use `rubocop` to load up the Standard rules as their interface is compatible with
+# tools like the `solargraph` LSP.
+
+parallel: yes
+format: progress

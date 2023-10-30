@@ -1,0 +1,28 @@
+---
+# This is the rubocop config loading all Standard rules by default. All extra plugin/rules are added
+# on separate files located at `.rubocop` directory so we don't pollute the root dir.
+#
+# See: https://evilmartians.com/chronicles/rubocoping-with-legacy-bring-your-ruby-code-up-to-standard
+
+# We want Exclude directives from different config files to get merged, not overwritten
+inherit_mode:
+  merge:
+    - Exclude
+
+require:
+  - standard
+  - standard-custom
+  # Required for standard-performance rules
+  - rubocop-performance
+
+inherit_gem:
+  # See: https://github.com/standardrb/standard/tree/main/config
+  standard: config/base.yml
+  standard-performance: config/base.yml
+  standard-custom: config/base.yml
+
+# Global options, such as Ruby version, etc.
+AllCops:
+  NewCops: disable
+  SuggestExtensions: false
+  TargetRubyVersion: 3.2
