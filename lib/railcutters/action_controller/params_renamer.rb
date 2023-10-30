@@ -6,14 +6,14 @@ module Railcutters
     module ParamsRenamer
       def rename!(spec)
         actions_from_spec(spec).each do |action|
-          rename_action(action, params)
+          rename_action(action, self)
         end
 
-        params
+        self
       end
 
       def rename(spec)
-        params = self.params.deep_dup
+        params = deep_dup
 
         actions_from_spec(spec).each do |action|
           rename_action(action, params)
