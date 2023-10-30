@@ -1,12 +1,25 @@
 module Railcutters
   module ActionController
+    # Rename parameters from a hash of "from => to" expressions.
+    # The expressions are dot notation strings, and can be used to rename keys, or to move keys
+    # around the parameters hash.
     module ParamsRenamer
-      def rename(spec)
+      def rename!(spec)
         actions_from_spec(spec).each do |action|
-          rename_action(action)
+          rename_action(action, params)
         end
 
-        self
+        params
+      end
+
+      def rename(spec)
+        params = self.params.deep_dup
+
+        actions_from_spec(spec).each do |action|
+          rename_action(action, params)
+        end
+
+        params
       end
 
       private
@@ -116,6 +129,10 @@ module Railcutters
         end
 
         if action[:child]
+          # If we're iterating over a Hash, we need to get the values, otherwise .each will return a
+          # tuple of [key, value] for each element, and we don't want that
+          element = element.values if element.respond_to?(:values)
+
           element.each do |child_el|
             rename_action(action[:child], child_el)
           end
