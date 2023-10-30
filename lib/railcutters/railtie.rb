@@ -1,11 +1,13 @@
 require "rails/railtie"
-require "action_controller/metal/strong_parameters"
 
 module Railcutters
   class Railtie < ::Rails::Railtie
     initializer "railcutters.load_action_controller" do
       return unless config.railcutters.use_params_renamer
-      ::ActionController::Parameters.include(ActionController::ParamsRenamer)
+
+      ActiveSupport.on_load(:action_controller) do
+        include(ActionController::ParamsRenamer)
+      end
     end
 
     config.railcutters = ActiveSupport::OrderedOptions.new
