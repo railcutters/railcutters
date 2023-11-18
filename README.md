@@ -41,3 +41,15 @@ end
 ```
 
 Disable it setting `config.railcutters.use_params_renamer = false` in your configuration.
+
+## Recommendations
+
+### SQLite maintainance
+
+If you're using SQLite, you should run the following commands periodically to keep your database in
+good shape:
+
+```sql
+PRAGMA optimize;
+VACUUM;
+```
