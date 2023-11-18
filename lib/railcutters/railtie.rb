@@ -34,7 +34,7 @@ module Railcutters
 
       # New in Rails 7.1: Instead of raising an error when an invalid value is passed to an enum, it
       # validates the value and adds an error to the record instead
-      validate: true,
+      validate: { allow_nil: true },
 
       # Both these options below are the Rails' defaults, but we're setting them explicitly here for
       # clarity's sake
