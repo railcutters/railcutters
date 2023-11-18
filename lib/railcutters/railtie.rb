@@ -4,13 +4,13 @@ require "action_controller/metal/strong_parameters"
 module Railcutters
   class Railtie < ::Rails::Railtie
     initializer "railcutters.load_action_controller" do
-      return unless config.railcutters.use_params_renamer
+      next unless config.railcutters.use_params_renamer
 
       ::ActionController::Parameters.include(ActionController::ParamsRenamer)
     end
 
     initializer "railcutters.load_active_record" do
-      return if config.railcutters.active_record_enum_defaults.present?
+      next if config.railcutters.active_record_enum_defaults.present?
 
       ::ActiveRecord::Base.extend(ActiveRecord::EnumDefaults)
     end
