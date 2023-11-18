@@ -47,7 +47,7 @@ end
 
 Disable it setting `config.railcutters.use_params_renamer = false` in your configuration.
 
-### ActiveRecordd::Enum defaults
+### ActiveRecord::Enum defaults
 
 #### Default behavior for arrays to be equivalent to hashes with key and value being the same
 
