@@ -11,7 +11,8 @@ Gem::Specification.new do |s|
   s.homepage = "https://garajau.com.br"
 
   s.add_development_dependency "rspec", "~> 3.0"
-  s.add_development_dependency "rails", ">= 7.0"
+  s.add_development_dependency "rails", ">= 7.1"
+  s.add_development_dependency "debug", ">= 1.8"
 
-  s.add_runtime_dependency "rails", ">= 7.0"
+  s.add_runtime_dependency "rails", ">= 7.1"
 end
