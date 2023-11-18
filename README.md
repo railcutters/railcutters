@@ -18,6 +18,11 @@ gem that does something similar to [suspenders](https://github.com/thoughtbot/su
 Yet, you don't need to go all in if you don't want/need to. It is made to be decoupled and
 composable, and you can configure individual feature sets that you want.
 
+## Requirements
+
+This gem is officially meant to be supported by Rails **7.1+**. It may work on older versions, but it
+is not guaranteed, as it is not tested against them.
+
 ## Install
 
 Add this to your `Gemfile`:
