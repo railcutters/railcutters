@@ -10,7 +10,7 @@ module Railcutters
     end
 
     initializer "railcutters.load_active_record" do
-      next if config.railcutters.active_record_enum_defaults.present?
+      next unless config.railcutters.active_record_enum_defaults.present?
 
       ::ActiveRecord::Base.extend(ActiveRecord::EnumDefaults)
     end
