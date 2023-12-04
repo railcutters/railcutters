@@ -18,10 +18,18 @@ gem that does something similar to [suspenders](https://github.com/thoughtbot/su
 Yet, you don't need to go all in if you don't want/need to. It is made to be decoupled and
 composable, and you can configure individual feature sets that you want.
 
+## Breaking configuration
+
+Some of the configuration will drastically change the way you write your code, so they are
+classified as breaking changes. They are recommended for brand new projects or if you're willing to
+change the existing code. In either case, you can disable these features individually or simply
+disable all breaking changes by setting `config.railcutters.set_safe_defaults!` in your
+configuration.
+
 ## Requirements
 
-This gem is officially meant to be supported by Rails **7.1+**. It may work on older versions, but it
-is not guaranteed, as it is not tested against them.
+This gem is officially meant to be supported by Rails **7.1+**. It may work on older versions, but
+it is not guaranteed, as it is not tested against them.
 
 ## Install
 
@@ -46,6 +54,21 @@ end
 ```
 
 Disable it setting `config.railcutters.use_params_renamer = false` in your configuration.
+
+### Normalize controller parameters to use snake_case
+
+It allows you to always rely that parameters sent from your frontend will have `snake_case` keys,
+while converting them to `camelCase` before sending them back to the frontend. It allows you to use
+the best of both worlds, while keeping the codebase consistent on both frontend and backend.
+
+For converting keys to `camelCase`, you need to use `Jbuilder`.
+
+Disable it setting `config.railcutters.normalize_payload_keys = false` in your configuration.
+
+> This configuration is a breaking change if you are already counting on the case of the parameters
+> in your application. This is recommended for new projects, and if you're not willing to change the
+> existing code, you can disable this feature and any other breaking change by setting
+> `config.railcutters.set_safe_defaults!` in your configuration.
 
 ### ActiveRecord::Enum defaults
 
