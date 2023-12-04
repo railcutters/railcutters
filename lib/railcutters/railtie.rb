@@ -15,6 +15,19 @@ module Railcutters
       ::ActiveRecord::Base.extend(ActiveRecord::EnumDefaults)
     end
 
+    initializer "railcutters.load_normalize_payload_keys" do
+      next unless config.railcutters.normalize_payload_keys
+
+      if defined?(Jbuilder)
+        ::Jbuilder.key_format camelize: :lower
+        ::Jbuilder.deep_format_keys true
+      end
+
+      ::ActiveSupport.on_load(:action_controller) do
+        include(ActionController::FormatRequestParams)
+      end
+    end
+
     # Settings to allow us to turn individual features on and off
     # ===========================================================
 
@@ -52,12 +65,24 @@ module Railcutters
     # you're starting a new project or are willing to change your existing code.
     config.railcutters.active_record_enum_use_string_values = true
 
+    # This will normalize the keys of the payload sent to and from the controller to be snake_case
+    # instead of camelCase.
+    #
+    # This is useful if you are using a frontend framework that uses camelCase, but you want to keep
+    # your backend code in snake_case. To normalize parameters sent from the controller, you need to
+    # use JBuilder.
+    #
+    # WARNING: this will affect existing code that rely on using camelCase keys, so you should only
+    # enable this if you're starting a new project or are willing to change your existing code.
+    config.railcutters.normalize_payload_keys = true
+
     # This is a helper method to set all the defaults to a safe value, meaning that it will not make
     # any changes to the default behavior of Rails. This is useful if you are installing this gem
     # in an existing project and don't want to change any default behavior.
     config.railcutters.define_singleton_method(:set_safe_defaults!) do
       self.railcutters.active_record_enum_defaults = nil
       self.railcutters.active_record_enum_use_string_values = false
+      self.railcutters.normalize_payload_keys = false
     end
   end
 end
