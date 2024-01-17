@@ -1,7 +1,7 @@
 module Railcutters
   module ActiveRecord
     module ConnectionAdapters
-      module Overrides
+      module DefaultTimestamps
         # Always use `CURRENT_TIMESTAMP` as the default for timestamps, so that whenever we create
         # a record outside Rails, it populates the timestamps just as well.
         #

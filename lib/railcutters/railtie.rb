@@ -1,5 +1,7 @@
 require "rails/railtie"
 require "action_controller/metal/strong_parameters"
+require "rails/generators/generated_attribute"
+require "active_record/connection_adapters/abstract/schema_definitions"
 
 module Railcutters
   class Railtie < ::Rails::Railtie
@@ -9,18 +11,39 @@ module Railcutters
       ::ActionController::Parameters.include(ActionController::ParamsRenamer)
     end
 
-    initializer "railcutters.load_sqlite_sensible_defaults" do
-      next unless config.railcutters.use_sqlite_better_defaults
-
-      ActiveSupport.on_load(:active_record_sqlite3adapter) do
-        # self refers to `SQLite3Adapter` here, so we can call .include directly
-        include(ActiveRecord::ConnectionAdapters::SQLite3Adapter)
+    initializer "railcutters.load_sqlite_configs" do
+      if config.railcutters.use_sqlite_tuning
+        ::ActiveSupport.on_load(:active_record_sqlite3adapter) do
+          # self refers to `SQLite3Adapter` here, so we can call .include directly
+          include(ActiveRecord::ConnectionAdapters::SQLite3Tuning)
+        end
       end
 
-      # Configures SQLite with a strict strings mode, which disables double-quoted string literals.
-      config.sqlite3_adapter_strict_strings_by_default = true
-      # Allow us to use sqlite3 in production without warnings
-      config.active_record.sqlite3_production_warning = false
+      if config.railcutters.use_sqlite_strictness
+        # Configures SQLite with a strict strings mode, which disables double-quoted string literals.
+        config.sqlite3_adapter_strict_strings_by_default = true
+
+        ::ActiveSupport.on_load(:active_record_sqlite3adapter) do
+          # self refers to `SQLite3Adapter` here, so we can call .include directly
+          include(ActiveRecord::ConnectionAdapters::SQLite3Strictness)
+        end
+      end
+
+      # Rails 8.0+ doesn't have this flag anymore
+      if Gem::Version.new(Rails.version) < Gem::Version.new("7.2")
+        # Allow us to use sqlite3 in production without warnings
+        config.active_record.sqlite3_production_warning = false
+      end
+    end
+
+    initializer "railcutters.load_migration_addons" do
+      next unless config.railcutters.active_record_migration_defaults
+
+      ::ActiveRecord::ConnectionAdapters::TableDefinition.prepend(
+        ActiveRecord::ConnectionAdapters::DefaultTimestamps
+      )
+      ::Rails::Generators::GeneratedAttribute.prepend(Rails::Generators::VisualizeNulls)
+      # config.generators { |g| g.templates.unshift(File.expand_path("templates", __dir__)) }
     end
 
     initializer "railcutters.load_active_record" do
@@ -33,8 +56,8 @@ module Railcutters
       next unless config.railcutters.normalize_payload_keys
 
       if defined?(Jbuilder)
-        ::Jbuilder.key_format camelize: :lower
-        ::Jbuilder.deep_format_keys true
+        ::Jbuilder.key_format(camelize: :lower)
+        ::Jbuilder.deep_format_keys(true)
       end
 
       ::ActiveSupport.on_load(:action_controller) do
@@ -51,8 +74,20 @@ module Railcutters
     # using an easy syntax
     config.railcutters.use_params_renamer = true
 
-    # Use sensible SQLite3 defaults such as enabling WAL and strict mode.
-    config.railcutters.use_sqlite_better_defaults = true
+    # Use SQLite3 strict mode
+    # WARNING: this will affect new tables created with `rails db:migrate`, and you will not be able
+    # to disable it once you enable it.
+    config.railcutters.use_sqlite_strictness = true
+
+    # Use sensible SQLite3 defaults to get more performance out of the box
+    config.railcutters.use_sqlite_tuning = true
+
+    # Use better defaults when creating and running migrations.
+    # It will set the default value of every created_at/updated_at to the CURRENT_TIMESTAMP function
+    # in the database, ensuring that it is created with the right values even outside rails.
+    # It will also set `null: false` on the migrations. It is already the default behavior, but this
+    # will make it explicit on the table definition.
+    config.railcutters.active_record_migration_defaults = true
 
     # Use better defaults for ActiveRecord::Enum. Pass nil or an empty hash to use Rails' defaults.
     #
@@ -100,7 +135,6 @@ module Railcutters
       self.railcutters.active_record_enum_defaults = nil
       self.railcutters.active_record_enum_use_string_values = false
       self.railcutters.normalize_payload_keys = false
-      self.use_sqlite_better_defaults = false
     end
   end
 end

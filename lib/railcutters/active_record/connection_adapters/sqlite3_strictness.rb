@@ -1,62 +1,15 @@
 module Railcutters
   module ActiveRecord
     module ConnectionAdapters
-      module SQLite3Adapter
-        # Configure sensible defaults
-        #
-        # See: https://github.com/oldmoe/litestack/blob/master/lib/litestack/litedb.rb
+      module SQLite3Strictness
+        # Ensure we have the correct version of SQLite
         def configure_connection
+          # SQLite 3.37 is required for the `STRICT` option
           if ::SQLite3::SQLITE_VERSION_NUMBER < 3037000
             raise ActiveRecord::DatabaseConnectionError("SQLite3 version is older than 3.37")
           end
 
           super
-
-          # Load extensions if specified in the config file
-          if @config[:extensions].present?
-            @raw_connection.enable_load_extension(true)
-            @config[:extensions].each { |path| @raw_connection.load_extension(path) }
-            @raw_connection.enable_load_extension(false)
-          end
-
-          # Store temporary tables and indices in memory
-          @raw_connection.temp_store = "MEMORY"
-
-          # Journal mode WAL allows for greater concurrency (many readers + one writer)
-          @raw_connection.journal_mode = "WAL"
-
-          # Avoid FSYNC on the database file on every write and instead only waits for disk writes
-          # on WAL, which increases performance while not degrading durability
-          @raw_connection.synchronous = "NORMAL"
-
-          # Enforce foreign keys checking (Rails already does that by default but I like keeping it
-          # explicit here)
-          @raw_connection.foreign_keys = true
-
-          # Tunable settings
-          # ================
-
-          # Time (in ms) to wait to obtain a write lock before raising an exception. When not
-          # explicitely set, define a default value
-          if !@config[:timeout].present? && !@config[:retries].present?
-            @raw_connection.busy_timeout = 5000
-          end
-
-          # Sets an upper bound on the number of auxiliary threads that a prepared statement is
-          # allowed to launch to assist with a query.
-          @raw_connection.threads = @config.dig(:pragmas, :threads).presence || Etc.nprocessors
-
-          # Impose a limit on the WAL file to prevent unlimited growth
-          @raw_connection.journal_size_limit =
-            @config.dig(:pragmas, :journal_size_limit).presence || 256.megabytes
-
-          # Enable memory-mapped I/O for I/O intensive operations
-          # See: https://sqlite.org/mmap.html
-          @raw_connection.mmap_size = @config.dig(:pragmas, :mmap_size).presence || 256.megabytes
-
-          # Increase the local connection cache to 20.000 pages (each page has 4096 bytes, so in
-          # total we could be using up to ~80MB of memory)
-          @raw_connection.cache_size = @config.dig(:pragmas, :cache_size).presence || 20_000
         end
 
         # Adds `STRICT` as the options by default
@@ -86,6 +39,7 @@ module Railcutters
           # JSON is meant to be stored as TEXT, and SQLite has built-in functions to manipulate them
           # See: https://www.sqlite.org/json1.html
           json: { name: "text" },
+          jsonb: { name: "blob" },
 
           # In SQLite, DECIMAL is not a type, but an affinity. It will use either a INTEGER, REAL
           # or TEXT datatype internally depending on the size of the value. Instead, let's always
