@@ -52,8 +52,11 @@ module Railcutters
           # Time (in ms) to wait to obtain a write lock before raising an exception.
           # When not explicitely set, define a default value of 5s.
           # Uses sqlite3-ruby busy_handler_timeout which releases GVL between retries
+          # See: https://github.com/sparklemotion/sqlite3-ruby/pull/456
           if !@config[:timeout].present? && !@config[:retries].present?
             @raw_connection.busy_handler_timeout = 5000
+          elsif @config[:timeout].present?
+            @raw_connection.busy_handler_timeout = @config[:timeout]
           end
 
           # Load pragmas for Rails 7.1 (this is built-in on Rails 8)
