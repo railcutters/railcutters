@@ -109,3 +109,18 @@ Set your own defaults with `config.railcutters.enum_defaults = { ... }` in your 
 > in your application. This is recommended for new projects, and if you're not willing to change the
 > existing code, you can disable this feature and any other breaking change by setting
 > `config.railcutters.set_safe_defaults!` in your configuration.
+
+## Recommendations
+
+Aside from using the features above, there are some other recommendations that you can follow to
+have a more maintainable and consistent codebase.
+
+### SQLite maintainance
+
+If you're using SQLite, you should run the following commands periodically to keep your database in
+good shape:
+
+```sql
+PRAGMA optimize;
+VACUUM;
+```
