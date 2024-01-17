@@ -2,6 +2,11 @@ module Railcutters
   module ActiveRecord
     module ConnectionAdapters
       module SQLite3Tuning
+        # Ensure we override the constant in Rails 8.0+
+        def self.prepended(base)
+          base.class_eval { remove_const(:DEFAULT_PRAGMAS) if const_defined?(:DEFAULT_PRAGMAS) }
+        end
+
         DEFAULT_PRAGMAS = {
           "foreign_keys"        => true,
 
