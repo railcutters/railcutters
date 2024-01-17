@@ -14,8 +14,8 @@ module Railcutters
     initializer "railcutters.load_sqlite_configs" do
       if config.railcutters.use_sqlite_tuning
         ::ActiveSupport.on_load(:active_record_sqlite3adapter) do
-          # self refers to `SQLite3Adapter` here, so we can call .include directly
-          include(ActiveRecord::ConnectionAdapters::SQLite3Tuning)
+          # self refers to `SQLite3Adapter` here, so we can call .prepend directly
+          prepend(ActiveRecord::ConnectionAdapters::SQLite3Tuning)
         end
       end
 
@@ -24,8 +24,8 @@ module Railcutters
         config.sqlite3_adapter_strict_strings_by_default = true
 
         ::ActiveSupport.on_load(:active_record_sqlite3adapter) do
-          # self refers to `SQLite3Adapter` here, so we can call .include directly
-          include(ActiveRecord::ConnectionAdapters::SQLite3Strictness)
+          # self refers to `SQLite3Adapter` here, so we can call .prepend directly
+          prepend(ActiveRecord::ConnectionAdapters::SQLite3Strictness)
         end
       end
 
