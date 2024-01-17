@@ -43,7 +43,6 @@ module Railcutters
         ActiveRecord::ConnectionAdapters::DefaultTimestamps
       )
       ::Rails::Generators::GeneratedAttribute.prepend(Rails::Generators::VisualizeNulls)
-      # config.generators { |g| g.templates.unshift(File.expand_path("templates", __dir__)) }
     end
 
     initializer "railcutters.load_active_record" do
