@@ -8,32 +8,33 @@ module Railcutters
         end
 
         DEFAULT_PRAGMAS = {
-          "foreign_keys"        => true,
+          # Enforce and validate FKs
+          "foreign_keys" => true,
 
           # Journal mode WAL allows for greater concurrency (many readers + one writer)
-          "journal_mode"        => :wal,
+          "journal_mode" => :wal,
 
           # Avoid FSYNC on the database file on every write and instead only waits for disk writes
           # on WAL, which increases performance while not degrading durability
-          "synchronous"         => :normal,
+          "synchronous" => :normal,
 
           # Enable memory-mapped I/O for I/O intensive operations
           # See: https://sqlite.org/mmap.html
-          "mmap_size"           => 256.megabytes,
+          "mmap_size" => 256.megabytes,
 
           # Sets an upper bound on the number of auxiliary threads that a prepared statement is
           # allowed to launch to assist with a query.
-          "threads"             => Etc.nprocessors,
+          "threads" => Etc.nprocessors,
 
           # Impose a limit on the WAL file to prevent unlimited growth
-          "journal_size_limit"  => 256.megabytes,
+          "journal_size_limit" => 256.megabytes,
 
           # Increase the local connection cache to 20.000 pages (each page has 4096 bytes, so in
           # total we could be using up to ~80MB of memory)
-          "cache_size"          => 20_000,
+          "cache_size" => 20_000,
 
           # Store temporary tables and indices in memory
-          "temp_store"          => "MEMORY"
+          "temp_store" => "MEMORY"
         }
 
         # Configure sensible defaults
@@ -63,8 +64,8 @@ module Railcutters
           if Gem::Version.new(Rails.version) < Gem::Version.new("7.2")
             pragmas = @config.fetch(:pragmas, {}).stringify_keys
             DEFAULT_PRAGMAS.merge(pragmas).each do |pragma, value|
-              if ::SQLite3::Pragmas.method_defined?("#{pragma}=")
-                @raw_connection.public_send("#{pragma}=", value)
+              if ::SQLite3::Pragmas.method_defined?(:"#{pragma}=")
+                @raw_connection.public_send(:"#{pragma}=", value)
               else
                 warn "Unknown SQLite pragma: #{pragma}"
               end
