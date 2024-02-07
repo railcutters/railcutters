@@ -28,6 +28,13 @@ module Railcutters
       end
     end
 
+    initializer "railcutters.load_pagination" do
+      next unless config.railcutters.use_pagination
+
+      ::ActiveRecord::Base.extend(ActiveRecord::Pagination)
+      ::ActionController::Metal.include(ActionController::Pagination)
+    end
+
     # Settings to allow us to turn individual features on and off
     # ===========================================================
 
@@ -36,6 +43,11 @@ module Railcutters
     # Enable loading the params renamer, and allows parameters renaming from within controllers
     # using an easy syntax
     config.railcutters.use_params_renamer = true
+
+    # Enable a simple pagination helper for controllers and models, that exposes a `paginate` method
+    # to the controller and the model, and sets the pagination metadata on the response using the
+    # Pagination header.
+    config.railcutters.use_pagination = true
 
     # Use better defaults for ActiveRecord::Enum. Pass nil or an empty hash to use Rails' defaults.
     #
@@ -47,7 +59,7 @@ module Railcutters
 
       # New in Rails 7.1: Instead of raising an error when an invalid value is passed to an enum, it
       # validates the value and adds an error to the record instead
-      validate: { allow_nil: true },
+      validate: {allow_nil: true},
 
       # Both these options below are the Rails' defaults, but we're setting them explicitly here for
       # clarity's sake
@@ -80,9 +92,9 @@ module Railcutters
     # any changes to the default behavior of Rails. This is useful if you are installing this gem
     # in an existing project and don't want to change any default behavior.
     config.railcutters.define_singleton_method(:set_safe_defaults!) do
-      self.railcutters.active_record_enum_defaults = nil
-      self.railcutters.active_record_enum_use_string_values = false
-      self.railcutters.normalize_payload_keys = false
+      railcutters.active_record_enum_defaults = nil
+      railcutters.active_record_enum_use_string_values = false
+      railcutters.normalize_payload_keys = false
     end
   end
 end

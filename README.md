@@ -1,6 +1,6 @@
 # Railcutters
 
-[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/standardrb/standard)
 
 After years developing Rails applications, you eventually get used to a certain patterns that are
 not the default on the framework. As much as I love the defined opinions, good defaults and
@@ -11,12 +11,15 @@ sometimes you end up carrying some patterns, helpers or settings from one projec
 most of the time for the convenience, but also for the sake of consistency - individual or
 team-wise.
 
-Railcutters is a mix of patterns, features, libraries and settings that allowed me to leverage the
-power of Rails while being able to keep some sanity while hopping between projects. Think of it as a
-gem that does something similar to [suspenders](https://github.com/thoughtbot/suspenders).
+Railcutters is a mix of patterns, features, libraries and preset settings that allowed me to
+leverage the power of Rails while being able to keep some sanity while hopping between projects.
 
 Yet, you don't need to go all in if you don't want/need to. It is made to be decoupled and
 composable, and you can configure individual feature sets that you want.
+
+It goes without saying that this is a work in progress, so expect things to change, but so far
+everything is kept as simple as possible so you can review the code yourself and backed by a good
+test suite.
 
 ## Breaking configuration
 
@@ -43,7 +46,7 @@ At this point in time, this is an alpha project, so until `v1`, expect things to
 
 ## Features
 
-### ActionController::Base\#params.rename() 
+### ActionController::Base\#params.rename()
 
 Allow controller parameters to be renamed with an easy-to-use syntax:
 
@@ -54,6 +57,37 @@ end
 ```
 
 Disable it setting `config.railcutters.use_params_renamer = false` in your configuration.
+
+### ActionController::Metal\#paginate()
+
+Paginate a collection with an easy-to-use syntax:
+
+```ruby
+class UsersController < ApplicationController
+  def index
+    @users = paginate(User.where(customer_id: params[:customer_id]))
+  end
+end
+```
+
+This will automatically paginate the collection using the `page` and `per_page` parameters sent
+from the frontend. It also allows you to customize the pagination options by passing a hash as the
+second argument:
+
+```ruby
+class UsersController < ApplicationController
+  def index
+    @users = paginate(User.where(customer_id: params[:customer_id]), page: 4, per_page: 10)
+  end
+end
+```
+
+It outputs a `Pagination` header with the pagination information, so you can use it to render a
+pagination component in your frontend:
+
+Example header: `Pagination: page=1,per-page=30,total-records=100,total-pages=4`
+
+Disable it setting `config.railcutters.use_pagination = false` in your configuration.
 
 ### Normalize controller parameters to use snake_case
 
@@ -97,7 +131,7 @@ Disable it setting `config.railcutters.use_enum_defaults = false` in your config
 
 This helps you setting a default options to every enum you define, so you don't need to repeat them.
 By default, it sets the `prefix` option to `true`, so you can avoid clashing names when using
-different enums with the same value. 
+different enums with the same value.
 
 It also sets the `validate` option to `true`, a new option
 available since Rails 7.1 that avoids invalid enums to fail with a `ArgumentError` exception and
