@@ -2,7 +2,7 @@ require "active_support/concern"
 
 module Railcutters
   module ActionController
-    module ControllerPagination
+    module Pagination
       extend ActiveSupport::Concern
 
       included do
