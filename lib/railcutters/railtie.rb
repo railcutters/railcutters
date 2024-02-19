@@ -10,7 +10,7 @@ module Railcutters
     end
 
     initializer "railcutters.load_active_record" do
-      next unless config.railcutters.active_record_enum_defaults.present?
+      next if config.railcutters.active_record_enum_defaults.blank?
 
       ::ActiveRecord::Base.extend(ActiveRecord::EnumDefaults)
     end
@@ -19,8 +19,8 @@ module Railcutters
       next unless config.railcutters.normalize_payload_keys
 
       if defined?(Jbuilder)
-        ::Jbuilder.key_format camelize: :lower
-        ::Jbuilder.deep_format_keys true
+        ::Jbuilder.key_format(camelize: :lower)
+        ::Jbuilder.deep_format_keys(true)
       end
 
       ::ActiveSupport.on_load(:action_controller) do
@@ -38,7 +38,7 @@ module Railcutters
     # Settings to allow us to turn individual features on and off
     # ===========================================================
 
-    config.railcutters = ActiveSupport::OrderedOptions.new
+    config.railcutters = ::ActiveSupport::OrderedOptions.new
 
     # Enable loading the params renamer, and allows parameters renaming from within controllers
     # using an easy syntax
