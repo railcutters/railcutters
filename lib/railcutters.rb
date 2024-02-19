@@ -12,4 +12,11 @@ module Railcutters
     autoload :EnumDefaults, "railcutters/active_record/enum_defaults"
     autoload :Pagination, "railcutters/active_record/pagination"
   end
+
+  module Logging
+    autoload :HashTaggedLogger, "railcutters/logging/hash_tagged_logger"
+    autoload :HumanFriendlyFormatter, "railcutters/logging/human_friendly_formatter"
+    autoload :LogfmtFormatter, "railcutters/logging/logfmt_formatter"
+    autoload :RailsExt, "railcutters/logging/rails_ext"
+  end
 end

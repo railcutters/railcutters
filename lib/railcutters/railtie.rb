@@ -35,6 +35,12 @@ module Railcutters
       ::ActionController::Metal.include(ActionController::Pagination)
     end
 
+    initializer "railcutters.load_logging" do
+      next unless config.railcutters.use_hashed_tagged_logging
+
+      Logging::RailsExt.setup
+    end
+
     # Settings to allow us to turn individual features on and off
     # ===========================================================
 
@@ -87,6 +93,16 @@ module Railcutters
     # WARNING: this will affect existing code that rely on using camelCase keys, so you should only
     # enable this if you're starting a new project or are willing to change your existing code.
     config.railcutters.normalize_payload_keys = true
+
+    # This will force Rails internal logging to use a HashTaggedLogger instead of the default string
+    # interface. This will not have any effect if you use Rails' standard Logger. In order to enable
+    # it, you need to set your Rails logger to a HashTaggedLogger, for instance:
+    #
+    # config.logger = Railcutters::Logging::HashTaggedLogger.new(
+    #   $stdout,
+    #   formatter: Railcutters::Logging::HumanFriendlyFormatter.new
+    # )
+    config.railcutters.use_hashed_tagged_logging = true
 
     # This is a helper method to set all the defaults to a safe value, meaning that it will not make
     # any changes to the default behavior of Rails. This is useful if you are installing this gem
