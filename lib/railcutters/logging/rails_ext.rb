@@ -13,7 +13,7 @@ module Railcutters
       end
 
       def self.setup
-        return unless Rails.configuration.logger.is_a?(Railcutters::Logging::HashTaggedLogger)
+        return unless Rails.configuration.logger.is_a?(Railcutters::Logging::KVTaggedLogger)
 
         load_patches
         load_subscribers

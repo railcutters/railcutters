@@ -58,7 +58,7 @@ end
 
 Disable it setting `config.railcutters.use_params_renamer = false` in your configuration.
 
-### ActionController::Metal\#paginate()
+### ActionController::Metal\#paginate() [alpha]
 
 Paginate a collection with an easy-to-use syntax:
 
@@ -143,3 +143,42 @@ Set your own defaults with `config.railcutters.enum_defaults = { ... }` in your 
 > in your application. This is recommended for new projects, and if you're not willing to change the
 > existing code, you can disable this feature and any other breaking change by setting
 > `config.railcutters.set_safe_defaults!` in your configuration.
+
+### Logger
+
+#### KVTaggedLogger [beta]
+
+This is a Rails logger that allows you to add tags in the format of a key-value to the log messages
+instead of a plain string. It is useful for adding information that would otherwise be hard to parse
+in your log aggregator such as Grafana Loki or Splunk, for example.
+
+This is an opt-in feature, and to use it, you need to configure your logger like that:
+
+```
+# Log to STDOUT by default
+config.logger = Railcutters::Logging::HashTaggedLogger.new(
+  $stdout,
+  formatter: Railcutters::Logging::LogfmtFormatter.new
+)
+```
+
+We currently ship two log formatters: `LogfmtFormatter` and `HumanFriendlyFormatter`. The former is
+the recommendation for production environments, and the latter is meant to be used in development
+mode.
+
+When enabled, you can add tags to your log messages like that:
+
+```ruby
+Rails.logger.tagged(user_id: 1) do
+  Rails.logger.info("User created")
+end
+```
+
+This will output the following log message, when using the `LogfmtFormatter`:
+
+```
+user_id=1 msg="User created"
+```
+
+By default, when enabled, it will also reduce the verbosity of request log messages, while also
+converting many of Rails internal log messages to use the new format.

@@ -94,11 +94,11 @@ module Railcutters
     # enable this if you're starting a new project or are willing to change your existing code.
     config.railcutters.normalize_payload_keys = true
 
-    # This will force Rails internal logging to use a HashTaggedLogger instead of the default string
+    # This will force Rails internal logging to use a KVTaggedLogger instead of the default string
     # interface. This will not have any effect if you use Rails' standard Logger. In order to enable
-    # it, you need to set your Rails logger to a HashTaggedLogger, for instance:
+    # it, you need to set your Rails logger to a KVTaggedLogger, for instance:
     #
-    # config.logger = Railcutters::Logging::HashTaggedLogger.new(
+    # config.logger = Railcutters::Logging::KVTaggedLogger.new(
     #   $stdout,
     #   formatter: Railcutters::Logging::HumanFriendlyFormatter.new
     # )

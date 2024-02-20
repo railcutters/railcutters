@@ -1,5 +1,5 @@
 # This is an override module to ActionDispatch::DebugExceptions middleware so that exceptions
-# captured by it correctly logs them using HashTagLogger
+# captured by it correctly logs them using KVTaggedLogger
 module Railcutters::Logging::RailsExt::ActionDispatchDebugExceptions
   def log_error(request, wrapper)
     logger = logger(request)

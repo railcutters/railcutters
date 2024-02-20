@@ -14,7 +14,7 @@ module Railcutters
   end
 
   module Logging
-    autoload :HashTaggedLogger, "railcutters/logging/hash_tagged_logger"
+    autoload :KVTaggedLogger, "railcutters/logging/kv_tagged_logger"
     autoload :HumanFriendlyFormatter, "railcutters/logging/human_friendly_formatter"
     autoload :LogfmtFormatter, "railcutters/logging/logfmt_formatter"
     autoload :RailsExt, "railcutters/logging/rails_ext"

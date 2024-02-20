@@ -7,14 +7,14 @@ module Railcutters
     #
     # Usage:
     #  ```ruby
-    #  logger = Railcutters::HashTaggedLogger.new($stdout)
+    #  logger = Railcutters::KVTaggedLogger.new($stdout)
     #  logger.tagged(foo: "bar") do
     #    logger.info("Hello world")
     #  end
     #  logger.tagged(foo: "notbar").warn("Hello!")
     #  ```
     #
-    class HashTaggedLogger < ::Logger
+    class KVTaggedLogger < ::Logger
       def initialize(*, **)
         super
         ObjectSpace.define_finalizer(self, self.class.method(:finalize))
