@@ -35,7 +35,7 @@ module Railcutters
       ::ActionController::Metal.include(ActionController::Pagination)
     end
 
-    initializer "railcutters.load_logging" do
+    initializer "railcutters.load_logging", after: :initialize_logger do
       next unless config.railcutters.use_hashed_tagged_logging
 
       Logging::RailsExt.setup
