@@ -3,7 +3,7 @@ module Railcutters
     # Formats a hash-based log entry into a human-friendly string
     # The message line has to be a Hash otherwise this won't work
     class HumanFriendlyFormatter < ::Logger::Formatter
-      attr_accessor :colorize_logging, :tid_strlimit
+      attr_accessor :colorize_logging, :tid_tag, :tid_strlimit
 
       # ANSI sequence modes
       MODES = {
@@ -23,23 +23,37 @@ module Railcutters
       CYAN = "\e[36m"
       WHITE = "\e[37m"
 
-      def initialize(colorize_logging: true, datetime_format: "%H:%M:%S.%3N", tid_strlimit: 8)
+      # Initializes the formatter
+      #
+      # It will by default format the output using timestamp and a place the tid_tag at the first
+      # possible position. The `tid` tag stands for "transaction ID" and is used to identify a
+      # unique request or a job execution and it's useful for (distributed) tracing. You can name it
+      # however you want, and by default it's named `tid`. It doesn't have to be the same name you
+      # use for your HTTP header, for instance, you can use `tid` for the log and `X-Request-ID` for
+      # the HTTP header.
+      #
+      # @param colorize_logging [Boolean] whether to colorize the output or not
+      # @param datetime_format [String] the format to use for the timestamp
+      # @param tid_tag [Symbol] the tag to use for the request ID/job ID
+      # @param tid_strlimit [Integer] the maximum length of the request ID/job ID to display
+      def initialize(colorize_logging: true, datetime_format: "%H:%M:%S.%3N", tid_tag: :tid, tid_strlimit: 8)
         super()
         self.colorize_logging = colorize_logging
         self.datetime_format = datetime_format
+        self.tid_tag = tid_tag
         self.tid_strlimit = tid_strlimit
       end
 
       def call(severity, timestamp, progname, payload)
         log_line = format_datetime(timestamp) + " " + format_level(severity)
-        if payload[:tid]
-          tid = payload[:tid]
+        if payload[tid_tag]
+          tid = payload[tid_tag]
           tid = tid.slice(0, tid_strlimit) if tid_strlimit
           log_line += " " + colorize("[#{tid}]", :magenta)
         end
         log_line += " " + payload[:msg].strip
 
-        extra = payload.except(:msg, :tid).map do |k, v|
+        extra = payload.except(:msg, tid_tag).map do |k, v|
           colorize(k, nil, bold: true) +
             colorize("=", :blue, bold: true) +
             colorize(v, nil, italic: true)

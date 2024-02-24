@@ -19,6 +19,46 @@ module Railcutters
         load_subscribers
       end
 
+      # It processes tags set in `config.log_tags` or `config.active_job.log_tags`, or any other
+      # rails process executor that needs to support default tags.
+      #
+      # Supports the following ways of declaring the tags (both as a Hash and as an Array):
+      #
+      # config.log_tags = [:request_id]
+      # config.log_tags = [Proc.new { |request| request.request_id }]
+      # config.log_tags = {request_id: Proc.new { |request| request.request_id }}
+      # config.log_tags = {tid: :request_id, user_id: Proc.new { |request| request.headers["User-ID"]}
+      def self.process_default_tags(wrapper_object, tags)
+        hash_tags = {}
+        array_tags = []
+
+        tags.each do |(key, value)|
+          # Taggers can be either a hash or an Array. If it's a hash, then the variables `key` and
+          # `value` will contain the key and value respectively. If it's an Array, then the variable
+          # `key` will actually contain the value, while the variable `value` will be nil. In this
+          # case, we want to use the value as the key and set key to nil.
+          key, value = nil, key if value.nil?
+
+          key, value = case value
+            # For all other cases, we just use the key as is, and we support Proc out of the box
+          when Proc
+            [key, tag.call(wrapper_object)]
+          when Symbol
+            [key, wrapper_object.send(value)]
+          else
+            [key, value]
+          end
+
+          if key.nil?
+            array_tags.push(value)
+          else
+            hash_tags[key] = value
+          end
+        end
+
+        [hash_tags, array_tags]
+      end
+
       def self.load_patches
         require "rails/rack/logger"
         Rails::Rack::Logger.prepend(RackLogger)

@@ -87,15 +87,9 @@ module Railcutters
       end
 
       # Generates a hash from existing tags array
-      #
-      # It never overrides the `tid` tag if it's already set. For example, in a synchronous job
-      # execution (when using `perform_now` during a request), the `tid` tag will be kept to the
-      # previously set request ID.
       def processed_tags
         unnamed_tags = 0
         tags.each_with_object({}) do |tag, hash|
-          current_tid = hash[:tid]
-
           if tag.is_a?(Hash)
             hash.merge!(tag.transform_keys(&:to_sym))
           elsif tag.is_a?(String) && tag.include?("=")
@@ -105,8 +99,6 @@ module Railcutters
             tagname = "tag#{unnamed_tags += 1}"
             hash[tagname.to_sym] = tag
           end
-
-          hash[:tid] = current_tid if current_tid
         end
       end
     end

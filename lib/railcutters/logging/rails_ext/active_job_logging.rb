@@ -10,10 +10,19 @@ require "active_job/logging"
 
 module ::ActiveJob::Logging
   def perform_now
-    tag_logger(job: self.class.name, tid: job_id, job_id: job_id) { super }
+    tag_logger({job: self.class.name, job_id: job_id}, *default_tags) { super }
   end
 
   def tag_logger(*tags, &)
     logger.tagged(*tags, &)
+  end
+
+  private
+
+  def default_tags
+    log_tags = Rails.configuration.active_job.log_tags
+    return [] unless log_tags
+
+    Railcutters::Logging::RailsExt.process_default_tags(self, log_tags)
   end
 end
