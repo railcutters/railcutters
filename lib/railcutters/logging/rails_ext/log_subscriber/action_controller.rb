@@ -30,7 +30,7 @@ module Railcutters::Logging::RailsExt::LogSubscriber
         request = payload[:request]
 
         if status.nil? && (exception_class_name = payload[:exception]&.first)
-          status = ActionDispatch::ExceptionWrapper.status_code_for_exception(exception_class_name)
+          status = ::ActionDispatch::ExceptionWrapper.status_code_for_exception(exception_class_name)
         end
 
         if payload[:view_runtime]
@@ -45,7 +45,7 @@ module Railcutters::Logging::RailsExt::LogSubscriber
 
         {msg: "Request finished",
          method: request.method, path: request.filtered_path, ip: request.ip,
-         status:, status_text: Rack::Utils::HTTP_STATUS_CODES[status],
+         status:, status_text: ::Rack::Utils::HTTP_STATUS_CODES[status],
          duration: "#{event.duration.round}ms", views:, db:, allocations:}.compact_blank
       end
     end
