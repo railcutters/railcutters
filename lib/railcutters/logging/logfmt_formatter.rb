@@ -23,10 +23,10 @@ module Railcutters
       end
 
       def call(severity, timestamp, progname, payload)
-        # Ensure that in the case that payload comes with `ts`, `level` as keys, it won't override them
-        # in the final value
+        # Ensure that in the case that payload comes with `ts`, `level` as keys, it won't override
+        # them in the final value
         tid = {tid_tag => payload[tid_tag]}
-        {ts: format_datetime(timestamp), sev: severity, **tid, msg: payload[:msg]}
+        {ts: format_datetime(timestamp), level: severity, **tid, msg: payload[:msg]}
           .compact_blank
           .merge(payload) { |_, main, payload| main }
           .map { |k, v| "#{k}=#{escape_value(v)}" }
@@ -40,13 +40,14 @@ module Railcutters
       end
 
       def escape_value(value)
+        # Remove excessive spaces
         value = value.to_s
           .strip
           .gsub(/\s+/, " ")
 
-        # Only add quotes if the value contains spaces, quote or backslashes, and if so we ensure to
-        # escape existing quotes and backslashes
-        if value.match?(/[ \\"]/)
+        # Only add quotes if the value contains spaces, quotes or backslashes, and if so we
+        # ensure to escape the quotes and backslashes
+        if value.match?(/[ \\"=]/)
           value = "\"" + value.gsub(/[\\"]/, "\\\\\\0") + "\""
         end
 
