@@ -154,7 +154,7 @@ in your log aggregator such as Grafana Loki or Splunk, for example.
 
 This is an opt-in feature, and to use it, you need to configure your logger like that:
 
-```
+```ruby
 # Use a TID for request and job logs
 config.log_tags = {tid: :request_id}
 config.active_job.log_tags = {tid: :job_id}
