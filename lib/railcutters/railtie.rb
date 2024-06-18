@@ -31,7 +31,7 @@ module Railcutters
     initializer "railcutters.load_pagination" do
       next unless config.railcutters.use_pagination
 
-      ::ActiveRecord::Base.extend(ActiveRecord::Pagination)
+      ::ActiveRecord::Base.include(ActiveRecord::Pagination)
       ::ActionController::Metal.include(ActionController::Pagination)
     end
 

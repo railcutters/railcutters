@@ -18,7 +18,7 @@ module Railcutters
       #
       # ```
       # class User < ApplicationRecord
-      #  paginates_per 100
+      #   paginates_per 100
       # end
       # ```
       class_methods do
