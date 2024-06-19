@@ -47,9 +47,10 @@ module Railcutters
         end
 
         # Defines the columns that can be used to sort a query using the `user_sort` scope.
-        def user_sort_columns(columns)
-          raise ArgumentError, "takes an array as a parameter" unless columns.is_a?(Array)
-          @user_sort_columns = columns
+        #
+        # It takes either a list of columns or an array. Defaults to an empty array
+        def user_sort_columns(*columns)
+          @user_sort_columns = columns.flatten.compact_blank
         end
       end
 
@@ -57,7 +58,11 @@ module Railcutters
         # Sorts a query using the given field and direction. The field must be one of the columns
         # defined in the model using `user_sort_columns`.
         scope :user_sort, ->(field, direction = :asc) do
-          next unless field.to_sym.in?(klass.instance_variable_get(:@user_sort_columns).map(&:to_sym))
+          next if field.blank?
+
+          permitted_columns = klass.instance_variable_get(:@user_sort_columns)&.map(&:to_sym) || []
+          next unless field.to_sym.in?(permitted_columns)
+
           direction = :asc unless %w[desc asc].include?(direction.to_sym)
           order(field.to_sym => direction.to_sym)
         end
