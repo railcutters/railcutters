@@ -35,6 +35,12 @@ module Railcutters
       ::ActionController::Metal.include(ActionController::Pagination)
     end
 
+    initializer "railcutters.load_safe_sort" do
+      next unless config.railcutters.use_safe_sort
+
+      ::ActiveRecord::Base.include(ActiveRecord::SafeSort)
+    end
+
     initializer "railcutters.load_logging", after: :initialize_logger do
       next unless config.railcutters.use_hashed_tagged_logging
 
@@ -54,6 +60,10 @@ module Railcutters
     # to the controller and the model, and sets the pagination metadata on the response using the
     # Pagination header.
     config.railcutters.use_pagination = true
+
+    # Enable a new method (safe_sort) on models so that you can expose it safely to users and it's
+    # guaranteed to be validated against a list of allowed columns.
+    config.railcutters.use_safe_sort = true
 
     # Use better defaults for ActiveRecord::Enum. Pass nil or an empty hash to use Rails' defaults.
     #

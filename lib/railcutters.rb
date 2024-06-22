@@ -11,6 +11,7 @@ module Railcutters
   module ActiveRecord
     autoload :EnumDefaults, "railcutters/active_record/enum_defaults"
     autoload :Pagination, "railcutters/active_record/pagination"
+    autoload :SafeSort, "railcutters/active_record/safe_sort"
   end
 
   module Logging

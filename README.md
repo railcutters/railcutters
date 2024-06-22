@@ -102,7 +102,39 @@ Disable it setting `config.railcutters.normalize_payload_keys = false` in your c
 > This configuration is a breaking change if you are already counting on the case of the parameters
 > in your application. This is recommended for new projects, and if you're not willing to change the
 > existing code, you can disable this feature and any other breaking change by setting
-> `config.railcutters.set_safe_defaults!` in your configuration.
+> `config.railcutters.use_safe_defaults!` in your configuration.
+
+### ActiveRecord::Base\#safe_sort()
+
+This is a safe way to sort your queries, as it prevents database enumeration and potential DoS by
+limiting which columns can be sorted.
+
+You will need to first define the default sortable columns in your model:
+
+```ruby
+class User < ApplicationRecord
+  safe_sortable_columns :id, :name, :email
+end
+```
+
+Then you can call `safe_sort` in your queries:
+
+```ruby
+User.safe_sort(params[:sort], params[:order])
+```
+
+If you try to sort by a column that is not defined, it can either ignore the sorting at all, or you
+can define a fallback column:
+
+```ruby
+User.safe_sort(params[:sort], params[:order], default: :name, default_order: :asc)
+```
+
+You can also define the allowed columns on the method call:
+
+```ruby
+User.safe_sort(params[:sort], params[:order], only_columns: %i[name age])
+```
 
 ### ActiveRecord::Enum defaults
 
