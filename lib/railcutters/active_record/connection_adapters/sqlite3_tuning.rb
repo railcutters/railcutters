@@ -3,6 +3,7 @@ module Railcutters
     module ConnectionAdapters
       module SQLite3Tuning
         # Ensure we override the existing constants in Rails 8.0+
+        # TODO: Remove the `if const_defined?` checks when dropping support for Rails 7.1
         def self.prepended(base)
           base.class_eval { remove_const(:DEFAULT_PRAGMAS) if const_defined?(:DEFAULT_PRAGMAS) }
           base.class_eval { remove_const(:DEFAULT_CONFIG) if const_defined?(:DEFAULT_CONFIG) }
@@ -10,6 +11,7 @@ module Railcutters
 
         # This is implemented on 8.0+ so we backport it to 7.1
         # See: https://github.com/rails/rails/pull/50371
+        # TODO: Remove this when dropping support for Rails 7.1
         DEFAULT_CONFIG = {
           default_transaction_mode: :immediate,
         }
@@ -46,6 +48,7 @@ module Railcutters
 
         # We override the connect to ensure we can inject a `DEFAULT_CONFIG` into the connection so
         # we can set SQLite3 specific options.
+        # TODO: Remove this when dropping support for Rails 7.1
         def connect
           @raw_connection = self.class.new_client(DEFAULT_CONFIG.merge(@connection_parameters))
         rescue ConnectionNotEstablished => ex
@@ -69,6 +72,9 @@ module Railcutters
           # When not explicitely set, define a default value of 5s.
           # Uses sqlite3-ruby busy_handler_timeout which releases GVL between retries
           # See: https://github.com/sparklemotion/sqlite3-ruby/pull/456
+          # See: https://github.com/rails/rails/pull/51958
+          #
+          # TODO: Remove this when dropping support for Rails 7.1
           if !@config[:timeout].present? && !@config[:retries].present?
             @raw_connection.busy_handler_timeout = 5000
           elsif @config[:timeout].present?
@@ -76,6 +82,7 @@ module Railcutters
           end
 
           # Load pragmas for Rails 7.1 (this is built-in on Rails 8)
+          # TODO: Remove this when dropping support for Rails 7.1
           if Gem::Version.new(Rails.version) < Gem::Version.new("7.2")
             pragmas = @config.fetch(:pragmas, {}).stringify_keys
             DEFAULT_PRAGMAS.merge(pragmas).each do |pragma, value|
