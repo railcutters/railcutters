@@ -1,4 +1,4 @@
-require File.expand_path("../lib/railcutters/version", __FILE__)
+require_relative "lib/railcutters/version"
 
 Gem::Specification.new do |s|
   s.name = "railcutters"
@@ -15,4 +15,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "debug", ">= 1.8"
 
   s.add_runtime_dependency "rails", ">= 7.1"
+  s.add_runtime_dependency "sqlite3", "~> 1.4"
 end

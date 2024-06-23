@@ -1,4 +1,7 @@
-require 'active_support/concern'
+require "active_support/concern"
+require "active_support/core_ext/module/delegation"
+require "active_support/core_ext/module/attribute_accessors"
+require "action_controller/metal/strong_parameters"
 
 module Railcutters
   module ActionController
@@ -15,7 +18,22 @@ module Railcutters
       private
 
       def underscore_params!
-        params.deep_transform_keys!(&:underscore)
+        _deep_transform_keys_in_object!(params, &:underscore)
+      end
+
+      def _deep_transform_keys_in_object!(object, &block)
+        case object
+        when Hash, ::ActionController::Parameters
+          object.keys.each do |key|
+            value = object.delete(key)
+            object[yield(key)] = _deep_transform_keys_in_object!(value, &block)
+          end
+          object
+        when Array
+          object.map! { |e| _deep_transform_keys_in_object!(e, &block) }
+        else
+          object
+        end
       end
     end
   end
