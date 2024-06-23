@@ -185,7 +185,6 @@ Features to enhance the behavior of SQLite3
 
 ### ActionController::Base\#params.rename()
 
-<details>
 Allow controller parameters to be renamed with an easy-to-use syntax:
 
 ```ruby
@@ -194,12 +193,13 @@ def user_id_params
 end
 ```
 
-Disable it setting `config.railcutters.params_renamer = false` in your configuration.
-</details>
+> [!TIP]
+> Disable it setting `config.railcutters.params_renamer = false` in your configuration.
+
+---
 
 ### ActionController::Metal\#paginate() `[alpha]`
 
-<details>
 Paginate a collection with an easy-to-use syntax, useful for APIs, as it returns the pagination
 metadata on a header.
 
@@ -230,11 +230,11 @@ pagination component in your frontend:
 
 > [!TIP]
 > Disable it setting `config.railcutters.pagination = false` in your configuration.
-</details>
+
+---
 
 ### ActiveRecord::Base\#paginate() `[alpha]`
 
-<details>
 Paginates your query with an easy-to-use syntax. It works together with the `pagination` method
 available on the controller:
 
@@ -245,11 +245,11 @@ puts users.pagination # => #<Hash @page=4, @per_page=10, @total=100, @pages=10>
 
 > [!TIP]
 > Disable it setting `config.railcutters.pagination = false` in your configuration.
-</details>
+
+---
 
 ### ActiveRecord::Base\#safe_sort()
 
-<details>
 This is a safe way to sort your queries, as it prevents database enumeration and potential DoS by
 limiting which columns can be sorted.
 
@@ -282,11 +282,11 @@ User.safe_sort(params[:sort], params[:order], only_columns: %i[name age])
 
 > [!TIP]
 > Disable it setting `config.railcutters.safe_sort = false` in your configuration.
-</details>
+
+---
 
 ### Normalize controller parameters to use snake_case
 
-<details>
 It allows you to always rely that parameters sent from your frontend will have `snake_case` keys,
 while converting them to `camelCase` before sending them back to the frontend. It allows you to use
 the best of both worlds, while keeping the codebase consistent on both frontend and backend.
@@ -303,11 +303,12 @@ Disable it setting `config.railcutters.normalized_payload = false` in your confi
 > in your application. This is recommended for new projects, and if you're not willing to change the
 > existing code, you can disable this feature and any other breaking change by setting
 > `config.railcutters.use_safe_defaults!` in your configuration.
-</details>
 
-### ActiveRecord::Enum sensible defaults
+---
 
-#### Default behavior for arrays to be equivalent to hashes with identical key and values
+### ActiveRecord::Enum string values
+
+Sets the default behavior for array values to be equivalent to hashes with identical key and values.
 
 This helps keeping the database enum values consistent with the Ruby enum values, so it's easier to
 read them in the database. It also prevents you from mistakenly add a new value to the enum array
@@ -321,7 +322,8 @@ class User < ApplicationRecord
 end
 ```
 
-Disable it setting `config.railcutters.enum_defaults = false` in your configuration.
+> [!TIP]
+> Disable it setting `config.railcutters.enum_defaults = false` in your configuration.
 
 > [!CAUTION]
 > **This is a breaking configuration** if you are already using enums in your application. This is
@@ -329,7 +331,9 @@ Disable it setting `config.railcutters.enum_defaults = false` in your configurat
 > disable this feature and any other breaking change by setting
 > `config.railcutters.use_safe_defaults!` in your configuration.
 
-#### Default options when defining an enum
+---
+
+### ActiveRecord::Enum with sensible defaults
 
 This helps you setting a default options to every enum you define, so you don't need to repeat them.
 By default, it sets the `prefix` option to `true`, so you can avoid clashing names when using
@@ -339,13 +343,17 @@ It also sets the `validate` option to `true`, a new option
 available since Rails 7.1 that avoids invalid enums to fail with a `ArgumentError` exception and
 instead adds a validation error to the model.
 
-Set your own defaults with `config.railcutters.enum_defaults = { ... }` in your configuration.
+> [!TIP]
+> Set your own defaults with `config.railcutters.enum_defaults = { ... }` in your configuration. Set
+> it to a blank hash to disable it completely.
 
 > [!CAUTION]
 > **This is a breaking configuration** if you are already using enums in your application. This is
 > recommended for new projects, and if you're not willing to change the existing code, you can
 > disable this feature and any other breaking change by setting
 > `config.railcutters.use_safe_defaults!` in your configuration.
+
+---
 
 ### ActiveRecord Migration Defaults
 
@@ -356,9 +364,12 @@ This sets the following defaults to your migrations:
   1. Explicitly sets the current `null` value for fields declared on migration files. It makes
      the code more explicit and easier to read.
 
-### SQLite3 Enhancements
+> [!TIP]
+> Disable it setting `config.railcutters.ar_migration_defaults = false` in your configuration.
 
-#### STRICT tables
+---
+
+### SQLite3 STRICT tables
 
 This is [a feature available](https://sqlite.org/stricttables.html) since SQLite 3.37.0 (2021-11-27)
 that allows you to define tables with a more rigid type system, as found in all other SQL databases
@@ -372,13 +383,18 @@ When enabled, it will enforce the following rules:
 
 Because this is enabled on a per-table basis, you need to migrate existing tables to use this.
 
+> [!TIP]
+> Disable it setting `config.railcutters.sqlite_strictness = false` in your configuration.
+
 > [!WARNING]
 > **This is a breaking configuration** and will affect the way your database works. This is
 > recommended for new projects, and if you're not willing to change the existing code, you can
 > disable this feature and any other breaking change by setting
 > `config.railcutters.use_safe_defaults!` in your configuration.
 
-#### Performance tuning
+---
+
+### SQLite3 performance tuning
 
 SQLite is a great database for many use cases, but it is not without its quirks. One of the most
 common issues is that whiel very good at parallelism and handling concurrent writes, it is not
@@ -393,13 +409,13 @@ See: https://kerkour.com/sqlite-for-servers
 Additionally, two features are also available which will help you customizing your database:
 
   1. Enable loading extensions on `database.yml`
-  1. Enable setting `PRAGMAS` settings through `database.yml`
+  1. Enable setting `PRAGMA`'s settings through `database.yml`
 
 > [!IMPORTANT]
 > While this is a safe configuration, you will need to install `sqlite2` >= `2.0` to use it.
 
-> [!NOTE]
-> To disable this feature, set `config.railcutters.sqlite_tuning = false`
+> [!TIP]
+> Disable it setting `config.railcutters.sqlite_tuning = false` in your configuration.
 
 #### Using `PRAGMAS` to set database options
 
@@ -433,9 +449,9 @@ development:
 > [!NOTE]
 > Ensure that the extension exists and is compatible with your version of SQLite and OS/platform.
 
-### Logger
+---
 
-#### KVTaggedLogger `[beta]`
+### KVTaggedLogger `[beta]`
 
 This is a Rails logger that allows you to add tags in the format of a key-value to the log messages
 instead of a plain string. It is useful for adding information that would otherwise be hard to parse
@@ -475,6 +491,11 @@ user_id=1 msg="User created"
 
 By default, when enabled, it will also reduce the verbosity of request log messages, while also
 converting many of Rails internal log messages to use the new format.
+
+> [!TIP]
+> Disable it setting `config.railcutters.hashed_tagged_logging = false` in your configuration.
+
+---
 
 ## Recommendations
 
