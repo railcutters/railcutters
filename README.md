@@ -45,7 +45,7 @@ gem "railcutters", git: "https://github.com/railcutters/railcutters.git", branch
 
 At this point in time, this is an alpha project, so until `v1`, expect things to change.
 
-## Feature summary
+## Feature list
 
 Here's a table with all available features we offer through this gem. You can disable them
 individually by setting the corresponding configuration option `config.railcutters.<configuration>`
@@ -181,10 +181,11 @@ Features to enhance the behavior of SQLite3
   </tbody>
 </table>
 
-## Feature details
+## Feature documentation
+
+### ActionController::Base\#params.rename()
 
 <details>
-<summary><h3>ActionController::Base\#params.rename()</h3></summary>
 Allow controller parameters to be renamed with an easy-to-use syntax:
 
 ```ruby
@@ -198,6 +199,7 @@ Disable it setting `config.railcutters.params_renamer = false` in your configura
 
 ### ActionController::Metal\#paginate() `[alpha]`
 
+<details>
 Paginate a collection with an easy-to-use syntax, useful for APIs, as it returns the pagination
 metadata on a header.
 
@@ -226,19 +228,28 @@ pagination component in your frontend:
 
 **Example header:** `Pagination: page=1,per-page=30,total-records=100,total-pages=4`
 
-Disable it setting `config.railcutters.pagination = false` in your configuration.
+> [!TIP]
+> Disable it setting `config.railcutters.pagination = false` in your configuration.
+</details>
 
 ### ActiveRecord::Base\#paginate() `[alpha]`
 
-Paginates your query with an easy-to-use syntax:
+<details>
+Paginates your query with an easy-to-use syntax. It works together with the `pagination` method
+available on the controller:
 
 ```ruby
 users = User.where(customer_id: params[:customer_id]).paginate(page: 4, per_page: 10)
 puts users.pagination # => #<Hash @page=4, @per_page=10, @total=100, @pages=10>
 ```
 
+> [!TIP]
+> Disable it setting `config.railcutters.pagination = false` in your configuration.
+</details>
+
 ### ActiveRecord::Base\#safe_sort()
 
+<details>
 This is a safe way to sort your queries, as it prevents database enumeration and potential DoS by
 limiting which columns can be sorted.
 
@@ -269,8 +280,13 @@ You can also define the allowed columns on the method call:
 User.safe_sort(params[:sort], params[:order], only_columns: %i[name age])
 ```
 
+> [!TIP]
+> Disable it setting `config.railcutters.safe_sort = false` in your configuration.
+</details>
+
 ### Normalize controller parameters to use snake_case
 
+<details>
 It allows you to always rely that parameters sent from your frontend will have `snake_case` keys,
 while converting them to `camelCase` before sending them back to the frontend. It allows you to use
 the best of both worlds, while keeping the codebase consistent on both frontend and backend.
@@ -279,11 +295,15 @@ For converting keys to `camelCase`, you need to use `Jbuilder`.
 
 Disable it setting `config.railcutters.normalized_payload = false` in your configuration.
 
+> [!TIP]
+> Disable it setting `config.railcutters.safe_sort = false` in your configuration.
+
 > [!CAUTION]
 > **This is a breaking configuration** if you are already counting on the casing of the parameters
 > in your application. This is recommended for new projects, and if you're not willing to change the
 > existing code, you can disable this feature and any other breaking change by setting
 > `config.railcutters.use_safe_defaults!` in your configuration.
+</details>
 
 ### ActiveRecord::Enum sensible defaults
 
