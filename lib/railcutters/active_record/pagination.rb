@@ -45,28 +45,9 @@ module Railcutters
         def paginates_per(amount)
           @paginates_per = amount
         end
-
-        # Defines the columns that can be used to sort a query using the `user_sort` scope.
-        #
-        # It takes either a list of columns or an array. Defaults to an empty array
-        def user_sort_columns(*columns)
-          @user_sort_columns = columns.flatten.compact_blank
-        end
       end
 
       included do
-        # Sorts a query using the given field and direction. The field must be one of the columns
-        # defined in the model using `user_sort_columns`.
-        scope :user_sort, ->(field, direction = :asc) do
-          next if field.blank?
-
-          permitted_columns = klass.instance_variable_get(:@user_sort_columns)&.map(&:to_sym) || []
-          next unless field.to_sym.in?(permitted_columns)
-
-          direction = :asc unless %w[desc asc].include?(direction.to_sym)
-          order(field.to_sym => direction.to_sym)
-        end
-
         # Paginates a query using the the default per_page value
         scope :page, ->(page) do
           paginate(page: page)
@@ -109,6 +90,7 @@ module Railcutters
               count(:all)
             else
               # COUNT(*) OVER ()
+              # Not supported on MySQL 5.7 and below (released in 2015)
               sql = Arel.star.count.over(Arel::Nodes::Grouping.new([]))
               unscope(:order).limit(1).pick(sql).to_i
             end
