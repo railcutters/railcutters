@@ -59,6 +59,7 @@ module Railcutters
         [hash_tags, array_tags]
       end
 
+      # Injects and monkey patch Rails logging that is not covered by the log subscribers
       def self.load_patches
         require "rails/rack/logger"
         Rails::Rack::Logger.prepend(RackLogger)
@@ -69,6 +70,7 @@ module Railcutters
         require_relative "rails_ext/active_job_logging"
       end
 
+      # Replace all Rails log subscribers with our own
       def self.load_subscribers
         ::ActiveSupport.on_load(:action_controller, run_once: true) do
           require "action_controller/log_subscriber"
