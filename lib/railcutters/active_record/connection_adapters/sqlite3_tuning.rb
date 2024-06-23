@@ -2,10 +2,17 @@ module Railcutters
   module ActiveRecord
     module ConnectionAdapters
       module SQLite3Tuning
-        # Ensure we override the constant in Rails 8.0+
+        # Ensure we override the existing constants in Rails 8.0+
         def self.prepended(base)
           base.class_eval { remove_const(:DEFAULT_PRAGMAS) if const_defined?(:DEFAULT_PRAGMAS) }
+          base.class_eval { remove_const(:DEFAULT_CONFIG) if const_defined?(:DEFAULT_CONFIG) }
         end
+
+        # This is implemented on 8.0+ so we backport it to 7.1
+        # See: https://github.com/rails/rails/pull/50371
+        DEFAULT_CONFIG = {
+          default_transaction_mode: :immediate,
+        }
 
         DEFAULT_PRAGMAS = {
           # Enforce and validate FKs
@@ -36,6 +43,14 @@ module Railcutters
           # Store temporary tables and indices in memory
           "temp_store" => "MEMORY"
         }
+
+        # We override the connect to ensure we can inject a `DEFAULT_CONFIG` into the connection so
+        # we can set SQLite3 specific options.
+        def connect
+          @raw_connection = self.class.new_client(DEFAULT_CONFIG.merge(@connection_parameters))
+        rescue ConnectionNotEstablished => ex
+          raise ex.set_pool(@pool)
+        end
 
         # Configure sensible defaults
         #
