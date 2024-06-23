@@ -51,91 +51,134 @@ individually by setting the corresponding configuration option `config.railcutte
 to **`false`** in your configuration.
 
 <table>
-  <thead>
-    <tr>
-      <th style="text-align:left; background-color: #e0f0f0">Feature</th>
-      <th style="text-align:left; background-color: #e0f0f0">Summary</th>
-      <th style="text-align:left; background-color: #e0f0f0">Breaking</th>
-      <th style="text-align:left; background-color: #e0f0f0">Configuration</th>
-    </tr>
-  </thead>
   <tbody>
     <tr>
-      <td colspan="4" style="text-align:center"><h5>Rails</h5></td>
+      <td colspan="4" style="text-align:center">
+        <strong>Rails</strong><br>
+        Things that affects to the entire framework behavior
+      </td>
+    </tr>
+    <tr>
+      <th style="text-align:left">Feature</th>
+      <th style="text-align:left">Summary</th>
+      <th style="text-align:left">Breaking</th>
+      <th style="text-align:left">Configuration</th>
     </tr>
     <tr>
       <td><strong><code>KVTaggedLogger</code></strong></td>
       <td>Allow logging using Key-Valued structures for better tagging and observability</td>
-      <td>No</td>
+      <td>:white_check_mark: No</td>
       <td><code>hashed_tagged_logging</code></td>
     </tr>
+  </tbody>
+</table>
+
+<table>
+  <tbody>
     <tr>
-      <td colspan="4" style="text-align:center"><h5>ActionController</h5></td>
+      <td colspan="4" style="text-align:center">
+        <strong>ActionController</strong><br>
+        Features that affect the behavior of Controllers
+      </td>
     </tr>
     <tr>
-      <td><strong><code>ActionController params#rename()</code></strong></td>
+      <th style="text-align:left">Feature</th>
+      <th style="text-align:left">Summary</th>
+      <th style="text-align:left">Breaking</th>
+      <th style="text-align:left">Configuration</th>
+    </tr>
+    <tr>
+      <td><strong><code>params#rename()</code></strong></td>
       <td>Allows you to rename parameters coming to a route</td>
-      <td>No</td>
+      <td>:white_check_mark: No</td>
       <td><code>params_renamer</code></td>
     </tr>
     <tr>
-      <td><strong><code>ActionController#paginate()</code></strong></td>
+      <td><strong><code>#paginate()</code></strong></td>
       <td>Easily paginates an AR query for API endpoints</td>
-      <td>No</td>
+      <td>:white_check_mark: No</td>
       <td><code>pagination</code></td>
     </tr>
     <tr>
       <td><strong><code>snake_case controller parameters</code></strong></td>
       <td>Converts all controller parameters to snake_case</td>
-      <td>Yes</td>
+      <td>:x: Yes</td>
       <td><code>normalized_payload</code></td>
     </tr>
+  </tbody>
+</table>
+
+<table>
+  <tbody>
     <tr>
-      <td colspan="4" style="text-align:center"><h5>ActiveRecord</h5></td>
+      <td colspan="4" style="text-align:center">
+        <strong>ActiveRecord</strong><br>
+        Features affecting the behavior of Models
+      </td>
     </tr>
     <tr>
-      <td><strong><code>ActiveRecord#paginate()</code></strong></td>
+      <th style="text-align:left">Feature</th>
+      <th style="text-align:left">Summary</th>
+      <th style="text-align:left">Breaking</th>
+      <th style="text-align:left">Configuration</th>
+    </tr>
+    <tr>
+      <td><strong><code>#paginate()</code></strong></td>
       <td>Paginates an AR query and return its metadata</td>
-      <td>No</td>
+      <td>:white_check_mark: No</td>
       <td><code>pagination</code></td>
     </tr>
     <tr>
-      <td><strong><code>ActiveRecord#safe_sort()</code></strong></td>
+      <td><strong><code>#safe_sort()</code></strong></td>
       <td>Sorts a query while validating the allowed fields</td>
-      <td>No</td>
+      <td>:white_check_mark: No</td>
       <td><code>safe_sort</code></td>
     </tr>
     <tr>
-      <td><strong><code>ActiveRecord::Enum defaults</code></strong></td>
+      <td><strong><code>Enum defaults</code></strong></td>
       <td>Sets sensible and configurable defaults to <code>enum</code> on ActiveRecord</td>
-      <td>Yes</td>
+      <td>:x: Yes</td>
       <td><code>ar_enum_defaults</code></td>
     </tr>
     <tr>
-      <td><strong><code>ActiveRecord::Enum string values</code></strong></td>
+      <td><strong><code>Enum string values</code></strong></td>
       <td>Treats all <code>enums</code> values as strings on ActiveRecord</td>
-      <td>Yes</td>
+      <td>:x: Yes</td>
       <td><code>ar_enum_string_values</code></td>
     </tr>
     <tr>
       <td><strong><code>ActiveRecord Migration defaults</code></strong></td>
       <td>Sets database timestamps to created_at and updated_at fields, and makes null fields visible</td>
-      <td>No</td>
+      <td>:white_check_mark: No</td>
       <td><code>ar_migration_defaults</code></td>
     </tr>
+  </tbody>
+</table>
+
+<table>
+  <tbody>
     <tr>
-      <td colspan="4" style="text-align:center"><h5>ActiveRecord / SQLite</h5></td>
+      <td colspan="4" style="text-align:center">
+        <strong>ActiveRecord / SQLite</strong><br>
+        Features to enhance the behavior of SQLite3
+      </td>
+    </tr>
+    <tr>
+      <th style="text-align:left">Feature</th>
+      <th style="text-align:left">Summary</th>
+      <th style="text-align:left">Breaking</th>
+      <th style="text-align:left">Configuration</th>
     </tr>
     <tr>
       <td><strong><code>SQLite3 STRICT tables</code></strong></td>
       <td>Use SQLite rigid typing system for tables</td>
-      <td>Yes</td>
+      <td>:x: Yes</td>
       <td><code>sqlite_strictness</code></td>
     </tr>
     <tr>
       <td><strong><code>SQLite3 performance optimization</code></strong></td>
       <td>Configures SQLite3 for the best web server performance. Requires sqlite3 &gt;= 2.0</td>
-      <td>No</td>
+      <td>:white_check_mark: No</td>
       <td><code>sqlite_tuning</code></td>
     </tr>
   </tbody>
