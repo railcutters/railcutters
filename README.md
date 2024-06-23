@@ -46,6 +46,101 @@ At this point in time, this is an alpha project, so until `v1`, expect things to
 
 ## Features
 
+Here's a table with all available features we offer through this gem. You can disable them
+individually by setting the corresponding configuration option `config.railcutters.<configuration>`
+to **`false`** in your configuration.
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left; background-color: #e0f0f0">Feature</th>
+      <th style="text-align:left; background-color: #e0f0f0">Summary</th>
+      <th style="text-align:left; background-color: #e0f0f0">Breaking</th>
+      <th style="text-align:left; background-color: #e0f0f0">Configuration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td colspan="4" style="text-align:center"><h5>Rails</h5></td>
+    </tr>
+    <tr>
+      <td><strong><code>KVTaggedLogger</code></strong></td>
+      <td>Allow logging using Key-Valued structures for better tagging and observability</td>
+      <td>No</td>
+      <td><code>hashed_tagged_logging</code></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align:center"><h5>ActionController</h5></td>
+    </tr>
+    <tr>
+      <td><strong><code>ActionController params#rename()</code></strong></td>
+      <td>Allows you to rename parameters coming to a route</td>
+      <td>No</td>
+      <td><code>params_renamer</code></td>
+    </tr>
+    <tr>
+      <td><strong><code>ActionController#paginate()</code></strong></td>
+      <td>Easily paginates an AR query for API endpoints</td>
+      <td>No</td>
+      <td><code>pagination</code></td>
+    </tr>
+    <tr>
+      <td><strong><code>snake_case controller parameters</code></strong></td>
+      <td>Converts all controller parameters to snake_case</td>
+      <td>Yes</td>
+      <td><code>normalized_payload</code></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align:center"><h5>ActiveRecord</h5></td>
+    </tr>
+    <tr>
+      <td><strong><code>ActiveRecord#paginate()</code></strong></td>
+      <td>Paginates an AR query and return its metadata</td>
+      <td>No</td>
+      <td><code>pagination</code></td>
+    </tr>
+    <tr>
+      <td><strong><code>ActiveRecord#safe_sort()</code></strong></td>
+      <td>Sorts a query while validating the allowed fields</td>
+      <td>No</td>
+      <td><code>safe_sort</code></td>
+    </tr>
+    <tr>
+      <td><strong><code>ActiveRecord::Enum defaults</code></strong></td>
+      <td>Sets sensible and configurable defaults to <code>enum</code> on ActiveRecord</td>
+      <td>Yes</td>
+      <td><code>ar_enum_defaults</code></td>
+    </tr>
+    <tr>
+      <td><strong><code>ActiveRecord::Enum string values</code></strong></td>
+      <td>Treats all <code>enums</code> values as strings on ActiveRecord</td>
+      <td>Yes</td>
+      <td><code>ar_enum_string_values</code></td>
+    </tr>
+    <tr>
+      <td><strong><code>ActiveRecord Migration defaults</code></strong></td>
+      <td>Sets database timestamps to created_at and updated_at fields, and makes null fields visible</td>
+      <td>No</td>
+      <td><code>ar_migration_defaults</code></td>
+    </tr>
+    <tr>
+      <td colspan="4" style="text-align:center"><h5>ActiveRecord / SQLite</h5></td>
+    </tr>
+    <tr>
+      <td><strong><code>SQLite3 STRICT tables</code></strong></td>
+      <td>Use SQLite rigid typing system for tables</td>
+      <td>Yes</td>
+      <td><code>sqlite_strictness</code></td>
+    </tr>
+    <tr>
+      <td><strong><code>SQLite3 performance optimization</code></strong></td>
+      <td>Configures SQLite3 for the best web server performance. Requires sqlite3 &gt;= 2.0</td>
+      <td>No</td>
+      <td><code>sqlite_tuning</code></td>
+    </tr>
+  </tbody>
+</table>
+
 ### ActionController::Base\#params.rename()
 
 Allow controller parameters to be renamed with an easy-to-use syntax:
@@ -56,11 +151,12 @@ def user_id_params
 end
 ```
 
-Disable it setting `config.railcutters.use_params_renamer = false` in your configuration.
+Disable it setting `config.railcutters.params_renamer = false` in your configuration.
 
-### ActionController::Metal\#paginate() [alpha]
+### ActionController::Metal\#paginate() `[alpha]`
 
-Paginate a collection with an easy-to-use syntax:
+Paginate a collection with an easy-to-use syntax, useful for APIs, as it returns the pagination
+metadata on a header.
 
 ```ruby
 class UsersController < ApplicationController
@@ -85,24 +181,18 @@ end
 It outputs a `Pagination` header with the pagination information, so you can use it to render a
 pagination component in your frontend:
 
-Example header: `Pagination: page=1,per-page=30,total-records=100,total-pages=4`
+**Example header:** `Pagination: page=1,per-page=30,total-records=100,total-pages=4`
 
-Disable it setting `config.railcutters.use_pagination = false` in your configuration.
+Disable it setting `config.railcutters.pagination = false` in your configuration.
 
-### Normalize controller parameters to use snake_case
+### ActiveRecord::Base\#paginate() `[alpha]`
 
-It allows you to always rely that parameters sent from your frontend will have `snake_case` keys,
-while converting them to `camelCase` before sending them back to the frontend. It allows you to use
-the best of both worlds, while keeping the codebase consistent on both frontend and backend.
+Paginates your query with an easy-to-use syntax:
 
-For converting keys to `camelCase`, you need to use `Jbuilder`.
-
-Disable it setting `config.railcutters.normalize_payload_keys = false` in your configuration.
-
-> This configuration is a breaking change if you are already counting on the case of the parameters
-> in your application. This is recommended for new projects, and if you're not willing to change the
-> existing code, you can disable this feature and any other breaking change by setting
-> `config.railcutters.use_safe_defaults!` in your configuration.
+```ruby
+users = User.where(customer_id: params[:customer_id]).paginate(page: 4, per_page: 10)
+puts users.pagination # => #<Hash @page=4, @per_page=10, @total=100, @pages=10>
+```
 
 ### ActiveRecord::Base\#safe_sort()
 
@@ -136,9 +226,25 @@ You can also define the allowed columns on the method call:
 User.safe_sort(params[:sort], params[:order], only_columns: %i[name age])
 ```
 
-### ActiveRecord::Enum defaults
+### Normalize controller parameters to use snake_case
 
-#### Default behavior for arrays to be equivalent to hashes with key and value being the same
+It allows you to always rely that parameters sent from your frontend will have `snake_case` keys,
+while converting them to `camelCase` before sending them back to the frontend. It allows you to use
+the best of both worlds, while keeping the codebase consistent on both frontend and backend.
+
+For converting keys to `camelCase`, you need to use `Jbuilder`.
+
+Disable it setting `config.railcutters.normalized_payload = false` in your configuration.
+
+> [!CAUTION]
+> **This is a breaking configuration** if you are already counting on the casing of the parameters
+> in your application. This is recommended for new projects, and if you're not willing to change the
+> existing code, you can disable this feature and any other breaking change by setting
+> `config.railcutters.use_safe_defaults!` in your configuration.
+
+### ActiveRecord::Enum sensible defaults
+
+#### Default behavior for arrays to be equivalent to hashes with identical key and values
 
 This helps keeping the database enum values consistent with the Ruby enum values, so it's easier to
 read them in the database. It also prevents you from mistakenly add a new value to the enum array
@@ -146,17 +252,18 @@ without having the order in consideration, which can be a source of bugs.
 
 ```ruby
 class User < ApplicationRecord
-  enum status: %i[active inactive]
+  enum :status, %i[active inactive]
   # Is equivalent to:
-  enum status: { active: "active", inactive: "inactive" }
+  enum :status, { active: "active", inactive: "inactive" }
 end
 ```
 
-Disable it setting `config.railcutters.use_enum_defaults = false` in your configuration.
+Disable it setting `config.railcutters.enum_defaults = false` in your configuration.
 
-> It goes without saying that this configuration is a breaking change if you are already using enums
-> in your application. This is recommended for new projects, and if you're not willing to change the
-> existing code, you can disable this feature and any other breaking change by setting
+> [!CAUTION]
+> **This is a breaking configuration** if you are already using enums in your application. This is
+> recommended for new projects, and if you're not willing to change the existing code, you can
+> disable this feature and any other breaking change by setting
 > `config.railcutters.use_safe_defaults!` in your configuration.
 
 #### Default options when defining an enum
@@ -171,14 +278,101 @@ instead adds a validation error to the model.
 
 Set your own defaults with `config.railcutters.enum_defaults = { ... }` in your configuration.
 
-> It goes without saying that this configuration is a breaking change if you are already using enums
-> in your application. This is recommended for new projects, and if you're not willing to change the
-> existing code, you can disable this feature and any other breaking change by setting
+> [!CAUTION]
+> **This is a breaking configuration** if you are already using enums in your application. This is
+> recommended for new projects, and if you're not willing to change the existing code, you can
+> disable this feature and any other breaking change by setting
 > `config.railcutters.use_safe_defaults!` in your configuration.
+
+### ActiveRecord Migration Defaults
+
+This sets the following defaults to your migrations:
+
+  1. Sets `CURRENT_TIMESTAMP` as the default value for `timestamps` fields. It will make these
+     fields also work outside of Rails.
+  1. Explicitly sets the current `null` value for fields declared on migration files. It makes
+     the code more explicit and easier to read.
+
+### SQLite3 Enhancements
+
+#### STRICT tables
+
+This is [a feature available](https://sqlite.org/stricttables.html) since SQLite 3.37.0 (2021-11-27)
+that allows you to define tables with a more rigid type system, as found in all other SQL databases
+and in the SQL standard.
+
+When enabled, it will enforce the following rules:
+
+  1. The minimum version of SQLite is 3.37.0
+  1. All migrations that create tables will create them as `STRICT` by default
+  1. All field conversions will be done considering the available types in SQLite `STRICT` mode.
+
+Because this is enabled on a per-table basis, you need to migrate existing tables to use this.
+
+> [!WARNING]
+> **This is a breaking configuration** and will affect the way your database works. This is
+> recommended for new projects, and if you're not willing to change the existing code, you can
+> disable this feature and any other breaking change by setting
+> `config.railcutters.use_safe_defaults!` in your configuration.
+
+#### Performance tuning
+
+SQLite is a great database for many use cases, but it is not without its quirks. One of the most
+common issues is that whiel very good at parallelism and handling concurrent writes, it is not
+configured correctly out of the box to take advantage of this due to legacy reasons.
+
+This gem ships with a set of performance tuning options that makes it work better in most cases.
+Many of these options have already been merged into Rails 7.1, while others will only be available
+for Rails 8.0+, but you can use them today.
+
+See: https://kerkour.com/sqlite-for-servers
+
+Additionally, two features are also available which will help you customizing your database:
+
+  1. Enable loading extensions on `database.yml`
+  1. Enable setting `PRAGMAS` settings through `database.yml`
+
+> [!IMPORTANT]
+> While this is a safe configuration, you will need to install `sqlite2` >= `2.0` to use it.
+
+> [!NOTE]
+> To disable this feature, set `config.railcutters.sqlite_tuning = false`
+
+#### Using `PRAGMAS` to set database options
+
+In your `database.yml`, you can set `pragmas` to a hash of `PRAGMA` settings that will be set when
+the database is connected. To do so, you can use the following syntax:
+
+```yaml
+development:
+  adapter: sqlite3
+  database: storage/development.sqlite3
+  pragmas:
+    synchronous: 1
+    journal_mode: DELETE
+```
+
+See: https://www.sqlite.org/pragma.html
+
+#### Loading SQLite3 extensions
+
+In your `database.yml`, you can set `extensions` to an array of extension paths that will be loaded
+when the database is connected. To do so, you can use the following syntax:
+
+```yaml
+development:
+  adapter: sqlite3
+  database: storage/development.sqlite3
+  extensions:
+    - /path/to/extension.so
+```
+
+> [!NOTE]
+> Ensure that the extension exists and is compatible with your version of SQLite and OS/platform.
 
 ### Logger
 
-#### KVTaggedLogger [beta]
+#### KVTaggedLogger `[beta]`
 
 This is a Rails logger that allows you to add tags in the format of a key-value to the log messages
 instead of a plain string. It is useful for adding information that would otherwise be hard to parse
