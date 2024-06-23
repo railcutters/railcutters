@@ -2,32 +2,33 @@
 
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/standardrb/standard)
 
-After years developing Rails applications, you eventually get used to a certain patterns that are
-not the default on the framework. As much as I love the defined opinions, good defaults and
+After years developing Rails applications, one eventually get used to a certain patterns that are
+not the default on the framework. As much as we love the defined opinions, good defaults and
 guardrails for the most part, there's still some small nuisances that are left to personal taste.
 
 This is partially true for every Rails developer who has touched more than a few codebases:
-sometimes you end up carrying some patterns, helpers or settings from one project to another,
-most of the time for the convenience, but also for the sake of consistency - individual or
+sometimes you end up carrying some patterns, snippets, helpers or settings from one project to
+another, most of the time for the convenience, but also for the sake of consistency - individual or
 team-wise.
 
 Railcutters is a mix of patterns, features, libraries and preset settings that allowed me to
 leverage the power of Rails while being able to keep some sanity while hopping between projects.
 
 Yet, you don't need to go all in if you don't want/need to. It is made to be decoupled and
-composable, and you can configure individual feature sets that you want.
+composable, and you can configure individual specific features that you want.
 
 It goes without saying that this is a work in progress, so expect things to change, but so far
-everything is kept as simple as possible so you can review the code yourself and backed by a good
-test suite.
+everything is kept as simple as possible so you can review the code yourself and it's also backed by
+a good test suite.
 
 ## Breaking configuration
 
-Some of the configuration will drastically change the way you write your code, so they are
-classified as breaking changes. They are recommended for brand new projects or if you're willing to
-change the existing code. In either case, you can disable these features individually or simply
-disable all breaking changes by setting `config.railcutters.use_safe_defaults!` in your
-configuration.
+Some of the configuration will dramatically change the way you write your code, so they are
+classified as breaking configurations. They are recommended for brand new projects or if you're
+willing to change the existing code.
+
+In either case, you can disable these features individually or simply disable all breaking changes
+by setting `config.railcutters.use_safe_defaults!` in your configuration.
 
 ## Requirements
 
@@ -44,25 +45,27 @@ gem "railcutters", git: "https://github.com/railcutters/railcutters.git", branch
 
 At this point in time, this is an alpha project, so until `v1`, expect things to change.
 
-## Features
+## Feature summary
 
 Here's a table with all available features we offer through this gem. You can disable them
 individually by setting the corresponding configuration option `config.railcutters.<configuration>`
 to **`false`** in your configuration.
 
+Read the `Breaking` column as it will tell you if it will break your code on an existing project,
+meaning that you will need to change your code to make it work again. These settings are recommended
+for new projects or if you're willing to change the existing code.
+
+### Rails
+
+Things that affects to the entire framework behavior.
+
 <table>
   <tbody>
     <tr>
-      <td colspan="4" style="text-align:center">
-        <strong>Rails</strong><br>
-        Things that affects to the entire framework behavior
-      </td>
-    </tr>
-    <tr>
-      <th style="text-align:left">Feature</th>
-      <th style="text-align:left">Summary</th>
-      <th style="text-align:left">Breaking</th>
-      <th style="text-align:left">Configuration</th>
+      <th align="left">Feature</th>
+      <th align="left">Summary</th>
+      <th align="left">Breaking</th>
+      <th align="left">Configuration</th>
     </tr>
     <tr>
       <td><strong><code>KVTaggedLogger</code></strong></td>
@@ -73,19 +76,17 @@ to **`false`** in your configuration.
   </tbody>
 </table>
 
+### ActionController
+
+Features that affect the behavior of Controllers.
+
 <table>
   <tbody>
     <tr>
-      <td colspan="4" style="text-align:center">
-        <strong>ActionController</strong><br>
-        Features that affect the behavior of Controllers
-      </td>
-    </tr>
-    <tr>
-      <th style="text-align:left">Feature</th>
-      <th style="text-align:left">Summary</th>
-      <th style="text-align:left">Breaking</th>
-      <th style="text-align:left">Configuration</th>
+      <th align="left">Feature</th>
+      <th align="left">Summary</th>
+      <th align="left">Breaking</th>
+      <th align="left">Configuration</th>
     </tr>
     <tr>
       <td><strong><code>params#rename()</code></strong></td>
@@ -108,19 +109,17 @@ to **`false`** in your configuration.
   </tbody>
 </table>
 
+### ActiveRecord
+
+Features affecting the behavior of Models
+
 <table>
   <tbody>
     <tr>
-      <td colspan="4" style="text-align:center">
-        <strong>ActiveRecord</strong><br>
-        Features affecting the behavior of Models
-      </td>
-    </tr>
-    <tr>
-      <th style="text-align:left">Feature</th>
-      <th style="text-align:left">Summary</th>
-      <th style="text-align:left">Breaking</th>
-      <th style="text-align:left">Configuration</th>
+      <th align="left">Feature</th>
+      <th align="left">Summary</th>
+      <th align="left">Breaking</th>
+      <th align="left">Configuration</th>
     </tr>
     <tr>
       <td><strong><code>#paginate()</code></strong></td>
@@ -135,6 +134,12 @@ to **`false`** in your configuration.
       <td><code>safe_sort</code></td>
     </tr>
     <tr>
+      <td><strong><code>ActiveRecord Migration defaults</code></strong></td>
+      <td>Sets database timestamps to created_at and updated_at fields, and makes null fields visible</td>
+      <td>:white_check_mark: No</td>
+      <td><code>ar_migration_defaults</code></td>
+    </tr>
+    <tr>
       <td><strong><code>Enum defaults</code></strong></td>
       <td>Sets sensible and configurable defaults to <code>enum</code> on ActiveRecord</td>
       <td>:x: Yes</td>
@@ -146,34 +151,20 @@ to **`false`** in your configuration.
       <td>:x: Yes</td>
       <td><code>ar_enum_string_values</code></td>
     </tr>
-    <tr>
-      <td><strong><code>ActiveRecord Migration defaults</code></strong></td>
-      <td>Sets database timestamps to created_at and updated_at fields, and makes null fields visible</td>
-      <td>:white_check_mark: No</td>
-      <td><code>ar_migration_defaults</code></td>
-    </tr>
   </tbody>
 </table>
+
+### SQLite3
+
+Features to enhance the behavior of SQLite3
 
 <table>
   <tbody>
     <tr>
-      <td colspan="4" style="text-align:center">
-        <strong>ActiveRecord / SQLite</strong><br>
-        Features to enhance the behavior of SQLite3
-      </td>
-    </tr>
-    <tr>
-      <th style="text-align:left">Feature</th>
-      <th style="text-align:left">Summary</th>
-      <th style="text-align:left">Breaking</th>
-      <th style="text-align:left">Configuration</th>
-    </tr>
-    <tr>
-      <td><strong><code>SQLite3 STRICT tables</code></strong></td>
-      <td>Use SQLite rigid typing system for tables</td>
-      <td>:x: Yes</td>
-      <td><code>sqlite_strictness</code></td>
+      <th align="left">Feature</th>
+      <th align="left">Summary</th>
+      <th align="left">Breaking</th>
+      <th align="left">Configuration</th>
     </tr>
     <tr>
       <td><strong><code>SQLite3 performance optimization</code></strong></td>
@@ -181,11 +172,19 @@ to **`false`** in your configuration.
       <td>:white_check_mark: No</td>
       <td><code>sqlite_tuning</code></td>
     </tr>
+    <tr>
+      <td><strong><code>SQLite3 STRICT tables</code></strong></td>
+      <td>Use SQLite rigid typing system for tables</td>
+      <td>:x: Yes</td>
+      <td><code>sqlite_strictness</code></td>
+    </tr>
   </tbody>
 </table>
 
-### ActionController::Base\#params.rename()
+## Feature details
 
+<details>
+<summary><h3>ActionController::Base\#params.rename()</h3></summary>
 Allow controller parameters to be renamed with an easy-to-use syntax:
 
 ```ruby
@@ -195,6 +194,7 @@ end
 ```
 
 Disable it setting `config.railcutters.params_renamer = false` in your configuration.
+</details>
 
 ### ActionController::Metal\#paginate() `[alpha]`
 
