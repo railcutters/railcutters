@@ -26,7 +26,7 @@ test suite.
 Some of the configuration will drastically change the way you write your code, so they are
 classified as breaking changes. They are recommended for brand new projects or if you're willing to
 change the existing code. In either case, you can disable these features individually or simply
-disable all breaking changes by setting `config.railcutters.set_safe_defaults!` in your
+disable all breaking changes by setting `config.railcutters.use_safe_defaults!` in your
 configuration.
 
 ## Requirements
@@ -157,7 +157,7 @@ Disable it setting `config.railcutters.use_enum_defaults = false` in your config
 > It goes without saying that this configuration is a breaking change if you are already using enums
 > in your application. This is recommended for new projects, and if you're not willing to change the
 > existing code, you can disable this feature and any other breaking change by setting
-> `config.railcutters.set_safe_defaults!` in your configuration.
+> `config.railcutters.use_safe_defaults!` in your configuration.
 
 #### Default options when defining an enum
 
@@ -174,7 +174,7 @@ Set your own defaults with `config.railcutters.enum_defaults = { ... }` in your 
 > It goes without saying that this configuration is a breaking change if you are already using enums
 > in your application. This is recommended for new projects, and if you're not willing to change the
 > existing code, you can disable this feature and any other breaking change by setting
-> `config.railcutters.set_safe_defaults!` in your configuration.
+> `config.railcutters.use_safe_defaults!` in your configuration.
 
 ### Logger
 

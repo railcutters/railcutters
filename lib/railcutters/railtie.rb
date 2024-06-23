@@ -117,7 +117,7 @@ module Railcutters
     # This is a helper method to set all the defaults to a safe value, meaning that it will not make
     # any changes to the default behavior of Rails. This is useful if you are installing this gem
     # in an existing project and don't want to change any default behavior.
-    config.railcutters.define_singleton_method(:set_safe_defaults!) do
+    config.railcutters.define_singleton_method(:use_safe_defaults!) do
       railcutters.active_record_enum_defaults = nil
       railcutters.active_record_enum_use_string_values = false
       railcutters.normalize_payload_keys = false
