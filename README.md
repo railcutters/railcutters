@@ -183,6 +183,52 @@ Features to enhance the behavior of SQLite3
 
 ## Feature documentation
 
+### KVTaggedLogger `[beta]`
+
+This is a Rails logger that allows you to add tags in the format of a key-value to the log messages
+instead of a plain string. It is useful for adding information that would otherwise be hard to parse
+in your log aggregator such as Grafana Loki or Splunk, for example.
+
+This is an opt-in feature, and to use it, you need to configure your logger like that:
+
+```ruby
+# Use a TID for request and job logs
+config.log_tags = {tid: :request_id}
+config.active_job.log_tags = {tid: :job_id}
+
+# Log to STDOUT by default
+config.logger = Railcutters::Logging::HashTaggedLogger.new(
+  $stdout,
+  formatter: Railcutters::Logging::LogfmtFormatter.new
+)
+```
+
+We currently ship two log formatters: `LogfmtFormatter` and `HumanFriendlyFormatter`. The former is
+the recommendation for production environments, and the latter is meant to be used in development
+mode.
+
+When enabled, you can add tags to your log messages like that:
+
+```ruby
+Rails.logger.tagged(user_id: 1) do
+  Rails.logger.info("User created")
+end
+```
+
+This will output the following log message, when using the `LogfmtFormatter`:
+
+```
+user_id=1 msg="User created"
+```
+
+By default, when enabled, it will also reduce the verbosity of request log messages, while also
+converting many of Rails internal log messages to use the new format.
+
+> [!TIP]
+> Disable it setting `config.railcutters.hashed_tagged_logging = false` in your configuration.
+
+---
+
 ### ActionController::Base\#params.rename()
 
 Allow controller parameters to be renamed with an easy-to-use syntax:
@@ -230,6 +276,27 @@ pagination component in your frontend:
 
 > [!TIP]
 > Disable it setting `config.railcutters.pagination = false` in your configuration.
+
+---
+
+### Normalize controller parameters to use snake_case
+
+It allows you to always rely that parameters sent from your frontend will have `snake_case` keys,
+while converting them to `camelCase` before sending them back to the frontend. It allows you to use
+the best of both worlds, while keeping the codebase consistent on both frontend and backend.
+
+For converting keys to `camelCase`, you need to use `Jbuilder`.
+
+Disable it setting `config.railcutters.normalized_payload = false` in your configuration.
+
+> [!TIP]
+> Disable it setting `config.railcutters.safe_sort = false` in your configuration.
+
+> [!CAUTION]
+> **This is a breaking configuration** if you are already counting on the casing of the parameters
+> in your application. This is recommended for new projects, and if you're not willing to change the
+> existing code, you can disable this feature and any other breaking change by setting
+> `config.railcutters.use_safe_defaults!` in your configuration.
 
 ---
 
@@ -285,23 +352,38 @@ User.safe_sort(params[:sort], params[:order], only_columns: %i[name age])
 
 ---
 
-### Normalize controller parameters to use snake_case
+### ActiveRecord Migration Defaults
 
-It allows you to always rely that parameters sent from your frontend will have `snake_case` keys,
-while converting them to `camelCase` before sending them back to the frontend. It allows you to use
-the best of both worlds, while keeping the codebase consistent on both frontend and backend.
+This sets the following defaults to your migrations:
 
-For converting keys to `camelCase`, you need to use `Jbuilder`.
-
-Disable it setting `config.railcutters.normalized_payload = false` in your configuration.
+  1. Sets `CURRENT_TIMESTAMP` as the default value for `timestamps` fields. It will make these
+     fields also work outside of Rails.
+  1. Explicitly sets the current `null` value for fields declared on migration files. It makes
+     the code more explicit and easier to read.
 
 > [!TIP]
-> Disable it setting `config.railcutters.safe_sort = false` in your configuration.
+> Disable it setting `config.railcutters.ar_migration_defaults = false` in your configuration.
+
+---
+
+### ActiveRecord::Enum with sensible defaults
+
+This helps you setting a default options to every enum you define, so you don't need to repeat them.
+By default, it sets the `prefix` option to `true`, so you can avoid clashing names when using
+different enums with the same value.
+
+It also sets the `validate` option to `true`, a new option
+available since Rails 7.1 that avoids invalid enums to fail with a `ArgumentError` exception and
+instead adds a validation error to the model.
+
+> [!TIP]
+> Set your own defaults with `config.railcutters.ar_enum_defaults = { ... }` in your configuration. Set
+> it to a blank hash to disable it completely.
 
 > [!CAUTION]
-> **This is a breaking configuration** if you are already counting on the casing of the parameters
-> in your application. This is recommended for new projects, and if you're not willing to change the
-> existing code, you can disable this feature and any other breaking change by setting
+> **This is a breaking configuration** if you are already using enums in your application. This is
+> recommended for new projects, and if you're not willing to change the existing code, you can
+> disable this feature and any other breaking change by setting
 > `config.railcutters.use_safe_defaults!` in your configuration.
 
 ---
@@ -323,71 +405,10 @@ end
 ```
 
 > [!TIP]
-> Disable it setting `config.railcutters.enum_defaults = false` in your configuration.
+> Disable it setting `config.railcutters.ar_enum_string_values = false` in your configuration.
 
 > [!CAUTION]
 > **This is a breaking configuration** if you are already using enums in your application. This is
-> recommended for new projects, and if you're not willing to change the existing code, you can
-> disable this feature and any other breaking change by setting
-> `config.railcutters.use_safe_defaults!` in your configuration.
-
----
-
-### ActiveRecord::Enum with sensible defaults
-
-This helps you setting a default options to every enum you define, so you don't need to repeat them.
-By default, it sets the `prefix` option to `true`, so you can avoid clashing names when using
-different enums with the same value.
-
-It also sets the `validate` option to `true`, a new option
-available since Rails 7.1 that avoids invalid enums to fail with a `ArgumentError` exception and
-instead adds a validation error to the model.
-
-> [!TIP]
-> Set your own defaults with `config.railcutters.enum_defaults = { ... }` in your configuration. Set
-> it to a blank hash to disable it completely.
-
-> [!CAUTION]
-> **This is a breaking configuration** if you are already using enums in your application. This is
-> recommended for new projects, and if you're not willing to change the existing code, you can
-> disable this feature and any other breaking change by setting
-> `config.railcutters.use_safe_defaults!` in your configuration.
-
----
-
-### ActiveRecord Migration Defaults
-
-This sets the following defaults to your migrations:
-
-  1. Sets `CURRENT_TIMESTAMP` as the default value for `timestamps` fields. It will make these
-     fields also work outside of Rails.
-  1. Explicitly sets the current `null` value for fields declared on migration files. It makes
-     the code more explicit and easier to read.
-
-> [!TIP]
-> Disable it setting `config.railcutters.ar_migration_defaults = false` in your configuration.
-
----
-
-### SQLite3 STRICT tables
-
-This is [a feature available](https://sqlite.org/stricttables.html) since SQLite 3.37.0 (2021-11-27)
-that allows you to define tables with a more rigid type system, as found in all other SQL databases
-and in the SQL standard.
-
-When enabled, it will enforce the following rules:
-
-  1. The minimum version of SQLite is 3.37.0
-  1. All migrations that create tables will create them as `STRICT` by default
-  1. All field conversions will be done considering the available types in SQLite `STRICT` mode.
-
-Because this is enabled on a per-table basis, you need to migrate existing tables to use this.
-
-> [!TIP]
-> Disable it setting `config.railcutters.sqlite_strictness = false` in your configuration.
-
-> [!WARNING]
-> **This is a breaking configuration** and will affect the way your database works. This is
 > recommended for new projects, and if you're not willing to change the existing code, you can
 > disable this feature and any other breaking change by setting
 > `config.railcutters.use_safe_defaults!` in your configuration.
@@ -451,49 +472,28 @@ development:
 
 ---
 
-### KVTaggedLogger `[beta]`
+### SQLite3 STRICT tables
 
-This is a Rails logger that allows you to add tags in the format of a key-value to the log messages
-instead of a plain string. It is useful for adding information that would otherwise be hard to parse
-in your log aggregator such as Grafana Loki or Splunk, for example.
+This is [a feature available](https://sqlite.org/stricttables.html) since SQLite 3.37.0 (2021-11-27)
+that allows you to define tables with a more rigid type system, as found in all other SQL databases
+and in the SQL standard.
 
-This is an opt-in feature, and to use it, you need to configure your logger like that:
+When enabled, it will enforce the following rules:
 
-```ruby
-# Use a TID for request and job logs
-config.log_tags = {tid: :request_id}
-config.active_job.log_tags = {tid: :job_id}
+  1. The minimum version of SQLite is 3.37.0
+  1. All migrations that create tables will create them as `STRICT` by default
+  1. All field conversions will be done considering the available types in SQLite `STRICT` mode.
 
-# Log to STDOUT by default
-config.logger = Railcutters::Logging::HashTaggedLogger.new(
-  $stdout,
-  formatter: Railcutters::Logging::LogfmtFormatter.new
-)
-```
-
-We currently ship two log formatters: `LogfmtFormatter` and `HumanFriendlyFormatter`. The former is
-the recommendation for production environments, and the latter is meant to be used in development
-mode.
-
-When enabled, you can add tags to your log messages like that:
-
-```ruby
-Rails.logger.tagged(user_id: 1) do
-  Rails.logger.info("User created")
-end
-```
-
-This will output the following log message, when using the `LogfmtFormatter`:
-
-```
-user_id=1 msg="User created"
-```
-
-By default, when enabled, it will also reduce the verbosity of request log messages, while also
-converting many of Rails internal log messages to use the new format.
+Because this is enabled on a per-table basis, you need to migrate existing tables to use this.
 
 > [!TIP]
-> Disable it setting `config.railcutters.hashed_tagged_logging = false` in your configuration.
+> Disable it setting `config.railcutters.sqlite_strictness = false` in your configuration.
+
+> [!CAUTION]
+> **This is a breaking configuration** and will affect the way your database works. This is
+> recommended for new projects, and if you're not willing to change the existing code, you can
+> disable this feature and any other breaking change by setting
+> `config.railcutters.use_safe_defaults!` in your configuration.
 
 ---
 
