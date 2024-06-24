@@ -22,18 +22,18 @@ RSpec.describe Railcutters::ActiveRecord::EnumDefaults do
   end
 
   # Helper method to stub the existing configuration
-  def stub_config(enum_defaults: {}, use_string_values: false)
+  def stub_config(enum_defaults: {}, string_values: false)
     allow(Rails)
-      .to receive_message_chain(:configuration, :railcutters, :active_record_enum_defaults)
+      .to receive_message_chain(:configuration, :railcutters, :ar_enum_defaults)
       .and_return(enum_defaults)
     allow(Rails)
-      .to receive_message_chain(:configuration, :railcutters, :active_record_enum_use_string_values)
-      .and_return(use_string_values)
+      .to receive_message_chain(:configuration, :railcutters, :ar_enum_string_values)
+      .and_return(string_values)
   end
 
   describe "#enum" do
     it "when not using string values, doesn't touch the values array" do
-      stub_config(use_string_values: false)
+      stub_config(string_values: false)
       allow(subject).to receive(:original_enum)
 
       subject.enum(:name, [:value1, :value2])
@@ -42,7 +42,7 @@ RSpec.describe Railcutters::ActiveRecord::EnumDefaults do
     end
 
     it "when using string values, converts the values array to a hash" do
-      stub_config(use_string_values: true)
+      stub_config(string_values: true)
       allow(subject).to receive(:original_enum)
 
       subject.enum(:name, [:value1, :value2])
@@ -90,6 +90,15 @@ RSpec.describe Railcutters::ActiveRecord::EnumDefaults do
         subject.enum(:name, :values, prefix: false)
 
         expect(subject).to have_received(:original_enum).with(:name, :values, { prefix: false })
+      end
+
+      it "when calling using deprecated syntax, ignores any defaults and don't touch the values" do
+        stub_config(enum_defaults: { prefix: true }, string_values: true)
+        allow(subject).to receive(:original_enum)
+
+        subject.enum(status: [:active, :inactive])
+
+        expect(subject).to have_received(:original_enum).with(nil, nil, status: [:active, :inactive])
       end
     end
   end
