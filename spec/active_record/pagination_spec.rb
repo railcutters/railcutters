@@ -1,5 +1,5 @@
-require_relative "../../lib/railcutters/active_record/pagination"
 require_relative "../support/database_helper"
+require "railcutters"
 
 RSpec.describe Railcutters::ActiveRecord::Pagination do
   before(:all) { DatabaseHelper.up }

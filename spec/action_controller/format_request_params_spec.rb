@@ -1,6 +1,6 @@
-require_relative "../../lib/railcutters/action_controller/format_request_params"
 require_relative "../support/controller_parameters_helper"
-require "action_controller"
+
+require "railcutters"
 
 RSpec.describe Railcutters::ActionController::FormatRequestParams do
   subject do

@@ -1,3 +1,5 @@
+require "action_controller"
+
 module Railcutters
   module ActionController
     # Rename parameters from a hash of "from => to" expressions.

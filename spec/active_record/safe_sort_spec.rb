@@ -1,4 +1,4 @@
-require_relative "../../lib/railcutters/active_record/safe_sort"
+require "railcutters"
 
 RSpec.describe Railcutters::ActiveRecord::SafeSort do
   subject(:model_base) do

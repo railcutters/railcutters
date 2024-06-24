@@ -1,4 +1,5 @@
 require_relative "railcutters/version"
+require_relative "railcutters/allow_sqlite3_v2"
 require_relative "railcutters/railtie"
 
 module Railcutters
@@ -12,6 +13,18 @@ module Railcutters
     autoload :EnumDefaults, "railcutters/active_record/enum_defaults"
     autoload :Pagination, "railcutters/active_record/pagination"
     autoload :SafeSort, "railcutters/active_record/safe_sort"
+
+    module ConnectionAdapters
+      autoload :SQLite3Strictness, "railcutters/active_record/connection_adapters/sqlite3_strictness"
+      autoload :SQLite3Tuning, "railcutters/active_record/connection_adapters/sqlite3_tuning"
+      autoload :DefaultTimestamps, "railcutters/active_record/connection_adapters/default_timestamps"
+    end
+  end
+
+  module Rails
+    module Generators
+      autoload :VisualizeNulls, "railcutters/rails/generators/visualize_nulls"
+    end
   end
 
   module Logging
