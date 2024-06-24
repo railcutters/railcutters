@@ -183,7 +183,7 @@ Features to enhance the behavior of SQLite3
 
 ## Feature documentation
 
-### KVTaggedLogger `[beta]`
+### KVTaggedLogger
 
 This is a Rails logger that allows you to add tags in the format of a key-value to the log messages
 instead of a plain string. It is useful for adding information that would otherwise be hard to parse
@@ -244,7 +244,7 @@ end
 
 ---
 
-### ActionController::Metal\#paginate() `[alpha]`
+### ActionController::Metal\#paginate()
 
 Paginate a collection with an easy-to-use syntax, useful for APIs, as it returns the pagination
 metadata on a header.
@@ -300,7 +300,7 @@ Disable it setting `config.railcutters.normalized_payload = false` in your confi
 
 ---
 
-### ActiveRecord::Base\#paginate() `[alpha]`
+### ActiveRecord::Base\#paginate()
 
 Paginates your query with an easy-to-use syntax. It works together with the `pagination` method
 available on the controller:
