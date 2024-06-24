@@ -1,5 +1,4 @@
-require_relative "../../lib/railcutters/active_record/enum_defaults"
-require "active_record/railtie"
+require "railcutters"
 
 RSpec.describe Railcutters::ActiveRecord::EnumDefaults do
   subject do

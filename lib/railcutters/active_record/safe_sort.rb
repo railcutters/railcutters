@@ -1,7 +1,5 @@
-require "active_support/concern"
-require "active_support/core_ext/enumerable"
-require "active_support/core_ext/object/blank"
-require "active_support/core_ext/object/inclusion"
+require "active_record"
+require "active_support/core_ext"
 
 module Railcutters
   module ActiveRecord

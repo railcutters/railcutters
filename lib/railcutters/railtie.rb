@@ -1,7 +1,20 @@
 require "rails/railtie"
+require "rails/version"
+
+# Dependencies for ActionController::Parameters
+require "active_support/core_ext/module/delegation"
+require "active_support/core_ext/module/attribute_accessors"
 require "action_controller/metal/strong_parameters"
+
+# Dependencies for Rails::Generators::GeneratedAttribute
+require "active_support/concern"
+require "active_support/deprecation"
+require "active_support/deprecator"
 require "rails/generators/generated_attribute"
-require "active_record/connection_adapters/abstract/schema_definitions"
+
+# Dependencies for ActiveRecord::ConnectionAdapters::TableDefinition
+require "active_support/dependencies/autoload"
+require "active_record/connection_adapters"
 
 module Railcutters
   class Railtie < ::Rails::Railtie

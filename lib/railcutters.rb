@@ -1,4 +1,6 @@
 require_relative "railcutters/version"
+require_relative "railcutters/allow_sqlite3_v2"
+require_relative "railcutters/railtie"
 
 module Railcutters
   module ActionController

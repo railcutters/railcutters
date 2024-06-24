@@ -1,10 +1,6 @@
-require_relative "../../lib/railcutters/action_controller/params_renamer"
 require_relative "../support/controller_parameters_helper"
 
-# Require Rails' dependencies
-require "active_support"
-require "active_support/core_ext"
-require "action_controller"
+require "railcutters"
 
 RSpec.describe Railcutters::ActionController::ParamsRenamer do
   before { ActionController::Parameters.permit_all_parameters = true }

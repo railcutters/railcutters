@@ -1,7 +1,4 @@
-require "active_support/concern"
-require "active_support/core_ext/module/delegation"
-require "active_support/core_ext/module/attribute_accessors"
-require "action_controller/metal/strong_parameters"
+require "action_controller"
 
 module Railcutters
   module ActionController

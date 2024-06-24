@@ -1,3 +1,5 @@
+require "active_record/railtie"
+
 module Railcutters
   module ActiveRecord
     module EnumDefaults
