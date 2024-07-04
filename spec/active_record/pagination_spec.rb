@@ -104,6 +104,16 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
         .to include(sql: 'SELECT "animals".* FROM "animals" LIMIT ? OFFSET ?', binds: [30, 270])
     end
 
+    it "configures the default max_paginates_per value to the paginates_per value if it's greater" do
+      queries = DatabaseHelper.extract_executed_queries do
+        model_base.paginates_per(10000)
+        model_base.paginate(page: 1, per_page: 200).load
+      end
+
+      expect(queries)
+        .to include(sql: 'SELECT "animals".* FROM "animals" LIMIT ? OFFSET ?', binds: [200, 0])
+    end
+
     it "paginates starting from index 1" do
       queries = DatabaseHelper.extract_executed_queries do
         model_base.paginate(page: 1).to_a

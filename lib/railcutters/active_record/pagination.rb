@@ -66,20 +66,30 @@ module Railcutters
           end
           args = args[0] || {}
 
+          default_per_page = klass.instance_variable_get(:@paginates_per) || 30
+          default_max_per_page = klass.instance_variable_get(:@max_paginates_per) || 100
+          max_pages = klass.instance_variable_get(:@max_pages) || 100
+
+          # Avoid shooting oneself in the foot. When explicitly configuring the default value for
+          # paginates_per in the model, make sure it's at least the same as the max_paginates_per,
+          # otherwise it will be ignored.
+          klass_default_per_page = klass.instance_variable_get(:@paginates_per)
+          if klass_default_per_page && klass_default_per_page > default_max_per_page
+            default_max_per_page = klass_default_per_page
+          end
+
           # Accept either a hash of a keyword param, but prefer the keyword param
           page ||= args[:page] || 1
-          per_page ||= args[:per_page] || klass.instance_variable_get(:@paginates_per) || 30
+          per_page ||= args[:per_page] || default_per_page
 
           # To avoid user shenanigans, we validate the page and per_page values
           page = page.to_i
           per_page = per_page.to_i
           page = 1 if page < 1
-          max_pages = klass.instance_variable_get(:@max_pages) || 100
           page = [page, max_pages].min
 
-          per_page = 30 if per_page < 1
-          max_per_page = klass.instance_variable_get(:@max_paginates_per) || 100
-          per_page = [per_page, max_per_page].min
+          per_page = default_per_page if per_page < 1
+          per_page = [per_page, default_max_per_page].min
 
           query = all
 
