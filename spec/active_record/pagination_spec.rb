@@ -39,7 +39,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
   describe "#paginate" do
     it "accepts being called with named arguments" do
       queries = DatabaseHelper.extract_executed_queries do
-        model_base.paginate(page: 2, per_page: 100).to_a
+        model_base.paginate(page: 2, per_page: 100).load
       end
 
       expect(queries)
@@ -48,7 +48,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
 
     it "accepts being called with a hash as the argument" do
       queries = DatabaseHelper.extract_executed_queries do
-        model_base.paginate({page: 2, per_page: 100}).to_a
+        model_base.paginate({page: 2, per_page: 100}).load
       end
 
       expect(queries)
@@ -57,7 +57,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
 
     it "named arguments have precedence over hash arguments" do
       queries = DatabaseHelper.extract_executed_queries do
-        model_base.paginate({page: 5, per_page: 10}, page: 1, per_page: 20).to_a
+        model_base.paginate({page: 5, per_page: 10}, page: 1, per_page: 20).load
       end
 
       expect(queries)
@@ -67,7 +67,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
     it "uses the default per_page value" do
       queries = DatabaseHelper.extract_executed_queries do
         model_base.paginates_per(10)
-        model_base.paginate(page: 1).to_a
+        model_base.paginate(page: 1).load
       end
 
       expect(queries)
@@ -77,7 +77,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
     it "overrides the default per_page value" do
       queries = DatabaseHelper.extract_executed_queries do
         model_base.paginates_per(10)
-        model_base.paginate(page: 1, per_page: 20).to_a
+        model_base.paginate(page: 1, per_page: 20).load
       end
 
       expect(queries)
@@ -87,7 +87,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
     it "allow overriding the per_page up to the max_paginates_per value" do
       queries = DatabaseHelper.extract_executed_queries do
         model_base.max_paginates_per(10)
-        model_base.paginate(page: 1, per_page: 20).to_a
+        model_base.paginate(page: 1, per_page: 20).load
       end
 
       expect(queries)
@@ -97,7 +97,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
     it "allows paginating up to the max_pages value" do
       queries = DatabaseHelper.extract_executed_queries do
         model_base.max_pages(10)
-        model_base.paginate(page: 20).to_a
+        model_base.paginate(page: 20).load
       end
 
       expect(queries)
@@ -116,7 +116,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
 
     it "paginates starting from index 1" do
       queries = DatabaseHelper.extract_executed_queries do
-        model_base.paginate(page: 1).to_a
+        model_base.paginate(page: 1).load
       end
 
       expect(queries)
@@ -125,7 +125,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
 
     it "sets the index to 1 when the page is less than 1" do
       queries = DatabaseHelper.extract_executed_queries do
-        model_base.paginate(page: -1).to_a
+        model_base.paginate(page: -1).load
       end
 
       expect(queries)
@@ -140,7 +140,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
 
     it "counts the total number of records on ungrouped queries by executing a COUNT(*)" do
       queries = DatabaseHelper.extract_executed_queries do
-        model_base.paginate(page: 1).to_a
+        model_base.paginate(page: 1).load
       end
 
       expect(queries).to include(sql: 'SELECT COUNT(*) FROM "animals"', binds: [])
@@ -148,7 +148,7 @@ RSpec.describe Railcutters::ActiveRecord::Pagination do
 
     it "counts the total number of records on grouped queries by executing a COUNT(*) OVER()" do
       queries = DatabaseHelper.extract_executed_queries do
-        model_base.group(:name).paginate(page: 1).to_a
+        model_base.group(:name).paginate(page: 1).load
       end
 
       expect(queries)
