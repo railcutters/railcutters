@@ -128,26 +128,7 @@ module Railcutters::Logging::RailsExt::LogSubscriber
     end
 
     def args_info(job)
-      if job.class.log_arguments? && job.arguments.any?
-        job.arguments.map { |arg| format(arg).inspect }.join(", ")
-      end
-    end
-
-    def format(arg)
-      case arg
-      when Hash
-        arg.transform_values { |value| format(value) }
-      when Array
-        arg.map { |value| format(value) }
-      when GlobalID::Identification
-        begin
-          arg.to_global_id
-        rescue
-          arg
-        end
-      else
-        arg
-      end
+      job.arguments.inspect if job.class.log_arguments? && job.arguments.any?
     end
 
     def logger
