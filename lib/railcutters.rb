@@ -18,6 +18,7 @@ module Railcutters
       autoload :SQLite3Strictness, "railcutters/active_record/connection_adapters/sqlite3_strictness"
       autoload :SQLite3Tuning, "railcutters/active_record/connection_adapters/sqlite3_tuning"
       autoload :DefaultTimestamps, "railcutters/active_record/connection_adapters/default_timestamps"
+      autoload :DeferredForeignKey, "railcutters/active_record/connection_adapters/deferred_foreign_key"
     end
   end
 

@@ -61,6 +61,9 @@ module Railcutters
       ::ActiveRecord::ConnectionAdapters::TableDefinition.prepend(
         ActiveRecord::ConnectionAdapters::DefaultTimestamps
       )
+      ::ActiveRecord::ConnectionAdapters::SchemaStatements.prepend(
+        ActiveRecord::ConnectionAdapters::DeferredForeignKey
+      )
       ::Rails::Generators::GeneratedAttribute.prepend(Rails::Generators::VisualizeNulls)
     end
 

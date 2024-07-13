@@ -360,6 +360,9 @@ This sets the following defaults to your migrations:
      fields also work outside of Rails.
   1. Explicitly sets the current `null` value for fields declared on migration files. It makes
      the code more explicit and easier to read.
+  1. Sets all foreign key constraints to deferred, so they are not checked on every write within a
+     transaction. This allows you to write to the database in any order, and foreign keys will only
+     be checked at the end of the transaction. Only supported on PostgreSQL and SQLite on Rails 7.2+
 
 > [!TIP]
 > Disable it setting `config.railcutters.ar_migration_defaults = false` in your configuration.
