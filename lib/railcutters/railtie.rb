@@ -25,6 +25,8 @@ module Railcutters
     end
 
     initializer "railcutters.load_sqlite_configs" do
+      next unless config.respond_to?(:active_record)
+
       if config.railcutters.sqlite_tuning
         ::ActiveSupport.on_load(:active_record_sqlite3adapter) do
           # self refers to `SQLite3Adapter` here, so we can call .prepend directly
@@ -56,7 +58,7 @@ module Railcutters
     end
 
     initializer "railcutters.load_migration_addons" do
-      next unless config.railcutters.ar_migration_defaults
+      next if !config.respond_to?(:active_record) || !config.railcutters.ar_migration_defaults
 
       ::ActiveRecord::ConnectionAdapters::TableDefinition.prepend(
         ActiveRecord::ConnectionAdapters::DefaultTimestamps
@@ -68,7 +70,8 @@ module Railcutters
     end
 
     initializer "railcutters.load_active_record" do
-      next if config.railcutters.ar_enum_defaults.blank? && !config.railcutters.ar_enum_string_values
+      next if !config.respond_to?(:active_record) ||
+        config.railcutters.ar_enum_defaults.blank? && !config.railcutters.ar_enum_string_values
 
       ::ActiveRecord::Base.extend(ActiveRecord::EnumDefaults)
     end
@@ -87,14 +90,14 @@ module Railcutters
     end
 
     initializer "railcutters.load_pagination" do
-      next unless config.railcutters.pagination
+      next if !config.respond_to?(:active_record) || !config.railcutters.pagination
 
       ::ActiveRecord::Base.include(ActiveRecord::Pagination)
       ::ActionController::Metal.include(ActionController::Pagination)
     end
 
     initializer "railcutters.load_safe_sort" do
-      next unless config.railcutters.safe_sort
+      next if !config.respond_to?(:active_record) || !config.railcutters.safe_sort
 
       ::ActiveRecord::Base.include(ActiveRecord::SafeSort)
     end
@@ -103,6 +106,39 @@ module Railcutters
       next unless config.railcutters.hashed_tagged_logging
 
       Logging::RailsExt.setup
+    end
+
+    config.before_configuration do
+      ::Rails.application.initializer("railcutters.mock_settings.load", before: :load_environment_config) do
+        next unless config.railcutters.mock_settings_for_disabled_frameworks
+
+        config = ::Rails.configuration
+        unloaded_frameworks = config.railcutters._unloaded_frameworks = []
+
+        %i[
+          active_record active_job active_storage
+          action_view action_mailer action_mailbox action_cable
+        ].each do |framework|
+          next if config.respond_to?(framework)
+          config.send(:"#{framework}=", ActiveSupport::OrderedOptions.new)
+          unloaded_frameworks << framework
+        end
+      end
+
+      ::Rails.application.initializer("railcutters.mock_settings.cleanup", before: :load_environment_hook) do
+        next unless config.railcutters.mock_settings_for_disabled_frameworks
+
+        config = ::Rails.configuration
+        unloaded_frameworks = config.railcutters._unloaded_frameworks
+
+        unloaded_frameworks.each do |framework|
+          # Instead of setting it to nil, we delete it so that this variable is effectively not
+          # available on Rails::Configuration object (and `#respond_to?` will return false)
+          config.class.class_variable_get(:@@options).delete(framework)
+        end
+
+        config.railcutters.delete(:_unloaded_frameworks)
+      end
     end
 
     # Settings to allow us to turn individual features on and off
@@ -187,6 +223,18 @@ module Railcutters
     #   formatter: Railcutters::Logging::HumanFriendlyFormatter.new
     # )
     config.railcutters.hashed_tagged_logging = true
+
+    # Helps configuring Rails with disabled frameworks. Sometimes you'll want to use Rails without
+    # some of its frameworks, for instance, when you're building a JSON API and don't need
+    # ActionMailer, but you'd like to keep it under your configurations should you decide on using
+    # in the future. By default, Rails will raises errors if you try to configure it on the
+    # `environment/<env>.rb` file.
+    #
+    # This setting allows to automatically sets these individual components configuration to an
+    # empty config, so that Rails won't raise any errors when you assign values to them via
+    # `environment/<env>.rb` files, then they will be removed after the configuration is loaded, so
+    # that other gems that rely on these components to be loaded will work as expected.
+    config.railcutters.mock_settings_for_disabled_frameworks = true
 
     # This is a helper method to set all the defaults to a safe value, meaning that it will not make
     # any changes to the default behavior of Rails. This is useful if you are installing this gem

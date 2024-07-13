@@ -73,6 +73,15 @@ Things that affects to the entire framework behavior.
       <td>:white_check_mark: No</td>
       <td><code>hashed_tagged_logging</code></td>
     </tr>
+    <tr>
+      <td><strong><code>Configure disabled components</code></strong></td>
+      <td>Allow configuring disabled frameworks such as <code>active_job</code> or
+        <code>action_mailer</code>, even if they're disabled (commented out on
+        <code>config/application.rb</code>)
+      </td>
+      <td>:white_check_mark: No</td>
+      <td><code>mock_settings_for_disabled_frameworks</code></td>
+    </tr>
   </tbody>
 </table>
 
