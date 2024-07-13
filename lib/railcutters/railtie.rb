@@ -240,10 +240,10 @@ module Railcutters
     # any changes to the default behavior of Rails. This is useful if you are installing this gem
     # in an existing project and don't want to change any default behavior.
     config.railcutters.define_singleton_method(:use_safe_defaults!) do
-      railcutters.ar_enum_defaults = nil
-      railcutters.ar_enum_string_values = false
-      railcutters.sqlite_strictness = false
-      railcutters.normalized_payload = false
+      self.ar_enum_defaults = nil
+      self.ar_enum_string_values = false
+      self.sqlite_strictness = false
+      self.normalized_payload = false
     end
   end
 end
