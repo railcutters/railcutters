@@ -44,13 +44,13 @@ module Railcutters
         end
       end
 
-      # Rails 8.0+ doesn't have this flag anymore
+      # Rails 7.2+ doesn't have this flag anymore
       if Gem::Version.new(::Rails.version) < Gem::Version.new("7.2")
         # Allow us to use sqlite3 in production without warnings
         # We need to remove the hook because it's already loaded by the time we get here
         hooks = ActiveSupport.instance_variable_get(:@load_hooks)[:active_record_sqlite3adapter]
         warning_hook = hooks
-          .index { |h| h[0].source_location[0].ends_with?("active_record/railtie.rb") }
+          .index { |hook| hook[0].source_location[0].ends_with?("active_record/railtie.rb") }
         hooks.delete_at(warning_hook) if warning_hook
 
         config.active_record.sqlite3_production_warning = false
