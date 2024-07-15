@@ -1,8 +1,10 @@
-require_relative "railcutters/version"
-require_relative "railcutters/allow_sqlite3_v2"
-require_relative "railcutters/railtie"
-
+# Railcutters is a collection of opinionated defaults, utilities and enhancements for Rails
+# applications. It allows us to leverage the power of Rails while being able to keep some sanity
+# while hopping between projects.
+#
 module Railcutters
+  autoload :VERSION, "railcutters/version"
+
   module ActionController
     autoload :ParamsRenamer, "railcutters/action_controller/params_renamer"
     autoload :FormatRequestParams, "railcutters/action_controller/format_request_params"
@@ -37,3 +39,12 @@ module Railcutters
 
   autoload :Dotenv, "railcutters/dotenv"
 end
+
+# Railtie needs to be loaded immediately after the gem is loaded, so Rails can pick it up and
+# process it accordingly.
+#
+# It's loaded after the autoload definitions so that it can use them without having to use require.
+require_relative "railcutters/railtie"
+
+# TODO: Remove this when we drop support for Rails 7.1
+require_relative "railcutters/allow_sqlite3_v2"
