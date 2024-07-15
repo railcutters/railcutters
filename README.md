@@ -245,6 +245,23 @@ converting many of Rails internal log messages to use the new format.
 
 ---
 
+### Configure disabled components
+
+A common practice when working with Rails as API is to disable the components that you're not using
+by commenting them out on `config/application.rb`. However, if you simply comment them out, you
+will get an immediate error because they are probably being configured on your
+`config/environments/*.rb` files, so you would need to remove or comment them there as well.
+
+This feature allow you to keep these settings of disabled frameworks such as **active_job** or
+**action_mailer**, even if they're disabled (commented out on _config/application.rb_) so you can
+easily enable them if or when you change your mind and you need that component in the future.
+
+> [!TIP]
+> Disable it setting `config.railcutters.mock_settings_for_disabled_frameworks = false` in your
+> configuration.
+
+---
+
 ### Dotenv loading
 
 This feature allows you to load `.env` files in your Rails application. It is useful for development
