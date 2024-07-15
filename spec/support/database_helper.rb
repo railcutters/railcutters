@@ -16,6 +16,9 @@ class DatabaseHelper
     self.models = {}
   end
 
+  # Creates a model on the fly and returns the class reference
+  #
+  # Alternative gem: https://github.com/Casecommons/with_model
   def self.create_model(name, &migration_block)
     unless self.models[name]
       migration = Class.new(ActiveRecord::Migration[7.1])
