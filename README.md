@@ -82,6 +82,13 @@ Things that affects to the entire framework behavior.
       <td>:white_check_mark: No</td>
       <td><code>mock_settings_for_disabled_frameworks</code></td>
     </tr>
+    <tr>
+      <td><strong><code>Dotenv</code></strong></td>
+      <td>Allows loading <code>.env</code> files.
+      </td>
+      <td>:white_check_mark: No</td>
+      <td>N/A</td>
+    </tr>
   </tbody>
 </table>
 
@@ -235,6 +242,27 @@ converting many of Rails internal log messages to use the new format.
 
 > [!TIP]
 > Disable it setting `config.railcutters.hashed_tagged_logging = false` in your configuration.
+
+---
+
+### Dotenv loading
+
+This feature allows you to load `.env` files in your Rails application. It is useful for development
+and testing, as it allows you to set environment variables in a file instead of setting them
+manually.
+
+This is an opt-in feature, and to use it, you need to add this code below to your
+`config/application.rb`, right after the `require_relative "boot"` section.
+
+```ruby
+# Load .env files automatically for test and development environments
+require "railcutters/dotenv/load" if Rails.env.test? || Rails.env.development?
+```
+
+> [!TIP]
+> Alternatively, create a new file named `config/dotenv.rb` and add the code above to it. Then, add
+> `require_relative "dotenv"` to your `config/application.rb` file. This will make your application
+> file cleaner and easier to read.
 
 ---
 

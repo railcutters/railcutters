@@ -34,4 +34,6 @@ module Railcutters
     autoload :LogfmtFormatter, "railcutters/logging/logfmt_formatter"
     autoload :RailsExt, "railcutters/logging/rails_ext"
   end
+
+  autoload :Dotenv, "railcutters/dotenv"
 end
