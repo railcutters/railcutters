@@ -29,9 +29,11 @@ module Railcutters
         scope :safe_sort, ->(field, direction = :asc, only_columns: [], default: nil, default_order: :asc) do
           next if field.blank?
 
+          # Inside a scope block `self` is the Relation, not the model, so the allowed columns
+          # must be read from `klass` (the model class) where `safe_sortable_columns` stores them.
           permitted_columns =
             only_columns.presence ||
-            self.class.instance_variable_get(:@safe_sortable_columns)&.map(&:to_sym) ||
+            klass.instance_variable_get(:@safe_sortable_columns)&.map(&:to_sym) ||
             []
 
           unless field.to_sym.in?(permitted_columns)
