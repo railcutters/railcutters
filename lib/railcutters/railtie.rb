@@ -35,25 +35,15 @@ module Railcutters
       end
 
       if config.railcutters.sqlite_strictness
-        # Configures SQLite with a strict strings mode, which disables double-quoted string literals.
+        # Disables double-quoted string literals in SQLite. New apps already default this to true
+        # via `load_defaults`; we set it explicitly as a safety net for apps still running an older
+        # `load_defaults`.
         config.active_record.sqlite3_adapter_strict_strings_by_default = true
 
         ::ActiveSupport.on_load(:active_record_sqlite3adapter) do
           # self refers to `SQLite3Adapter` here, so we can call .prepend directly
           prepend(ActiveRecord::ConnectionAdapters::SQLite3Strictness)
         end
-      end
-
-      # Rails 7.2+ doesn't have this flag anymore
-      if Gem::Version.new(::Rails.version) < Gem::Version.new("7.2")
-        # Allow us to use sqlite3 in production without warnings
-        # We need to remove the hook because it's already loaded by the time we get here
-        hooks = ActiveSupport.instance_variable_get(:@load_hooks)[:active_record_sqlite3adapter]
-        warning_hook = hooks
-          .index { |hook| hook[0].source_location[0].ends_with?("active_record/railtie.rb") }
-        hooks.delete_at(warning_hook) if warning_hook
-
-        config.active_record.sqlite3_production_warning = false
       end
     end
 
