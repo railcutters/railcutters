@@ -32,7 +32,7 @@ by setting `config.railcutters.use_safe_defaults!` in your configuration.
 
 ## Requirements
 
-This gem is officially meant to be supported by Rails **7.1+**. It may work on older versions, but
+This gem is officially meant to be supported by Rails **8.1+**. It may work on older versions, but
 it is not guaranteed, as it is not tested against them.
 
 ## Install
@@ -416,7 +416,7 @@ This sets the following defaults to your migrations:
      the code more explicit and easier to read.
   1. Sets all foreign key constraints to deferred, so they are not checked on every write within a
      transaction. This allows you to write to the database in any order, and foreign keys will only
-     be checked at the end of the transaction. Only supported on PostgreSQL and SQLite on Rails 7.2+
+     be checked at the end of the transaction. Only supported on PostgreSQL and SQLite.
 
 > [!TIP]
 > Disable it setting `config.railcutters.ar_migration_defaults = false` in your configuration.
@@ -478,27 +478,25 @@ SQLite is a great database for many use cases, but it is not without its quirks.
 common issues is that whiel very good at parallelism and handling concurrent writes, it is not
 configured correctly out of the box to take advantage of this due to legacy reasons.
 
-This gem ships with a set of performance tuning options that makes it work better in most cases.
-Many of these options have already been merged into Rails 7.1, while others will only be available
-for Rails 8.0+, but you can use them today.
+Rails 8.1 already applies a good set of performance pragmas (WAL journaling, `synchronous=NORMAL`,
+memory-mapped I/O, a larger cache and more) and runs transactions in `IMMEDIATE` mode by default.
+This gem layers a few extra defaults on top of Rails' - notably `temp_store=MEMORY`, an auxiliary
+`threads` bound, and larger `cache_size`, `mmap_size` and `journal_size_limit` values - to squeeze
+out more performance for web server workloads.
 
 See: https://kerkour.com/sqlite-for-servers
 
-Additionally, two features are also available which will help you customizing your database:
-
-  1. Enable loading extensions on `database.yml`
-  1. Enable setting `PRAGMA`'s settings through `database.yml`
-
-> [!IMPORTANT]
-> While this is a safe configuration, you will need to install `sqlite2` >= `2.0` to use it.
+Both loading extensions and overriding pragmas through `database.yml` are handled natively by Rails
+8.1, using the same syntax shown below.
 
 > [!TIP]
 > Disable it setting `config.railcutters.sqlite_tuning = false` in your configuration.
 
 #### Using `PRAGMAS` to set database options
 
-In your `database.yml`, you can set `pragmas` to a hash of `PRAGMA` settings that will be set when
-the database is connected. To do so, you can use the following syntax:
+In your `database.yml`, you can set `pragmas` to a hash of `PRAGMA` settings that will be applied
+when the database is connected (a native Rails feature; this gem's extra defaults still apply
+underneath). To do so, you can use the following syntax:
 
 ```yaml
 development:
@@ -514,7 +512,8 @@ See: https://www.sqlite.org/pragma.html
 #### Loading SQLite3 extensions
 
 In your `database.yml`, you can set `extensions` to an array of extension paths that will be loaded
-when the database is connected. To do so, you can use the following syntax:
+when the database is connected (handled natively by Rails 8.1). To do so, you can use the following
+syntax:
 
 ```yaml
 development:

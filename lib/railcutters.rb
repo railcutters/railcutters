@@ -45,6 +45,3 @@ end
 #
 # It's loaded after the autoload definitions so that it can use them without having to use require.
 require_relative "railcutters/railtie"
-
-# TODO: Remove this when we drop support for Rails 7.1
-require_relative "railcutters/allow_sqlite3_v2"
